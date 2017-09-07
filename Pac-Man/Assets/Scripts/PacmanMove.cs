@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PacmanMove : MonoBehaviour {
     public float speed = 0.4f;
+    public Vector2 dest;
 	// Use this for initialization
 	void Start () {
         dest = transform.position;
