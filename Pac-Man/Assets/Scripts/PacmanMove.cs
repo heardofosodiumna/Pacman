@@ -2,10 +2,10 @@
 using System.Collections;
 
 public class PacmanMove : MonoBehaviour {
-    public float speed = 0.4f
+    public float speed = 0.4f;
 	// Use this for initialization
 	void Start () {
-	    dest = transform.position
+        dest = transform.position;
 	}
 	
 	// Update is called once per frame
