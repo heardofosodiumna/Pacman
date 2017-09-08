@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Collections;
 
 public class PacmanMove : MonoBehaviour {
-    public float speed = 0.4f;
+    public float speed = 0.1f;
+    Vector2 direction;
     Vector2 dest;
 	// Use this for initialization
 	void Start () {
@@ -16,33 +17,27 @@ public class PacmanMove : MonoBehaviour {
         GetComponent<Rigidbody2D>().MovePosition(pos);
         if (Input.GetKey(KeyCode.UpArrow) && valid(Vector2.up))
         {
+            direction = Vector2.up;
             dest = (Vector2)transform.position + Vector2.up;
         }
         else if (Input.GetKey(KeyCode.RightArrow) && valid(Vector2.right))
         {
+            direction = Vector2.right;
             dest = (Vector2)transform.position + Vector2.right;
         }
         else if (Input.GetKey(KeyCode.DownArrow) && valid(Vector2.down))
         {
+            direction = Vector2.down;
             dest = (Vector2)transform.position + Vector2.down;
         }
         else if (Input.GetKey(KeyCode.LeftArrow) && valid(Vector2.left))
         {
+            direction = Vector2.left;
             dest = (Vector2)transform.position + Vector2.left;
         }
 
-        if ((Vector2)transform.position == dest)
-    {
-            Vector2 direction;
-            if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("right"))
-                direction = Vector2.right;
-            else if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("left"))
-                direction = Vector2.left;
-            else if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("up"))
-                direction = Vector2.up;
-            else
-                direction = Vector2.down;
-
+        if ((Vector2)transform.position == dest && direction != null)
+        {
             dest = (Vector2)transform.position + direction;
         }
         Vector2 dir = dest - (Vector2)transform.position;
