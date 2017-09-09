@@ -10,6 +10,7 @@ public class ScoreManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        Totalscore = 0;
         text = GetComponent<Text>();
     }
 
@@ -24,10 +25,25 @@ public class ScoreManager : MonoBehaviour {
         {
             text.text = "0000" + Totalscore;
         }
-        else if (Totalscore > 9)
+        else if (Totalscore > 9 && Totalscore < 100)
         {
-            text.text = "0000" + Totalscore;
+            text.text = "000" + Totalscore;
         }
-
+        else if (Totalscore > 99 && Totalscore < 1000)
+        {
+            text.text = "00" + Totalscore;
+        }
+        else if (Totalscore > 999 && Totalscore < 10000)
+        {
+            text.text = "0" + Totalscore;
+        }
+        else if (Totalscore > 9999 && Totalscore < 100000)
+        {
+            text.text = ""+Totalscore;
+        }
+        else
+        {
+            text.text = "99999";
+        }
     }
 }
