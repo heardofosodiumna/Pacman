@@ -7,6 +7,7 @@ public class ScoreManager : MonoBehaviour {
 
     Text text;
     public static int Totalscore = 0;
+    
 
     // Use this for initialization
     void Start () {
