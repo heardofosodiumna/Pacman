@@ -1,19 +1,23 @@
-﻿using UnityEngine;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections;
+using UnityEngine;
 
-public class PacmanMove : MonoBehaviour {
+public class ghostMove : MonoBehaviour {
+    public LayerMask whatIsPellet;
     public float speed = 0.4f;
     Vector2 direction;
     Vector2 dest;
-	// Use this for initialization
-	void Start () {
+    public livesManager livesManager;
+    public GameObject pellet;
+    // Use this for initialization
+    void Start () {
         dest = transform.position;
-        
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
+        Physics2D.IgnoreCollision(pellet.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
         Vector2 pos = Vector2.MoveTowards(transform.position, dest, speed);
         GetComponent<Rigidbody2D>().MovePosition(pos);
 
@@ -35,7 +39,7 @@ public class PacmanMove : MonoBehaviour {
             {
                 direction = Vector2.left;
             }
-            if(valid(direction+direction/10))
+            if (valid(direction + direction / 10))
                 dest = (Vector2)transform.position + direction;
         }
 
@@ -43,12 +47,25 @@ public class PacmanMove : MonoBehaviour {
         GetComponent<Animator>().SetFloat("DirX", dir.x);
         GetComponent<Animator>().SetFloat("DirY", dir.y);
     }
-
-    bool valid(Vector2 dir) {
+    
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.name == "pacman")
+        {
+            livesManager.death();
+            Destroy(other.gameObject);
+           
+        }
+        Debug.Log("collided");
+    }
+    bool valid(Vector2 dir)
+    {
         // Cast Line from 'next to Pac-Man' to 'Pac-Man'
         Vector2 pos = transform.position;
-        RaycastHit2D hit = Physics2D.Linecast(pos + dir, pos);
-        return (hit.collider == GetComponent<Collider2D>());
+        RaycastHit2D hit = Physics2D.Linecast(pos + dir, pos, whatIsPellet);
+        return ((hit.collider == GetComponent<Collider2D>()));
     }
+
+
 
 }
