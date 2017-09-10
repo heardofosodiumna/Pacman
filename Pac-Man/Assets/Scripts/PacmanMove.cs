@@ -6,14 +6,24 @@ public class PacmanMove : MonoBehaviour {
     public float speed = 0.4f;
     Vector2 direction;
     Vector2 dest;
-	// Use this for initialization
-	void Start () {
+    public livesManager livesManager;
+    // Use this for initialization
+    void Start () {
         dest = transform.position;
         
 	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "ghost")
+        {
+            livesManager.death();
+            Destroy(this.gameObject);
+            Debug.Log("collided");
+        }
+       
+    }
+    // Update is called once per frame
+    void FixedUpdate () {
         Vector2 pos = Vector2.MoveTowards(transform.position, dest, speed);
         GetComponent<Rigidbody2D>().MovePosition(pos);
 
