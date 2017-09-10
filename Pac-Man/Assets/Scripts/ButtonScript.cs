@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
     using UnityEngine.SceneManagement;
 public class ButtonScript : MonoBehaviour {
+    
+    void Start()
+    {
+        Time.timeScale = 0f;
+    }
 
-	public void Restart()
+    public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-    public void Start()
+    public void StartGame()
     {
-        //do something
-
+        Time.timeScale = 1f;
     }
 }
