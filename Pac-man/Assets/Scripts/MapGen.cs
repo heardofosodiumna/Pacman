@@ -8,6 +8,7 @@ public class MapGen : MonoBehaviour {
     public GameObject big_bottom_left_corner;
     public GameObject big_bottom_right_corner;
     public GameObject big_top_left_corner;
+    public GameObject big_top_right_corner;
     public GameObject bottom_double;
     public GameObject bottom_left_corner_double;
     public GameObject bottom_left_corner_single;
@@ -31,10 +32,6 @@ public class MapGen : MonoBehaviour {
     public GameObject small_top;
     public GameObject small_top_left_corner;
     public GameObject small_top_right_corner;
-    public GameObject square_bottom_left_corner;
-    public GameObject square_bottom_right_corner;
-    public GameObject square_top_left_corner;
-    public GameObject square_top_right_corner;
     public GameObject straight_double_bottom_left_corner;
     public GameObject straight_double_bottom_right_corner;
     public GameObject straight_double_top_left_corner;
@@ -48,6 +45,8 @@ public class MapGen : MonoBehaviour {
     public GameObject top_left_corner_single;
     public GameObject top_right_corner_double;
     public GameObject top_right_corner_single;
+
+    public GameObject pellet;
 
     public ArrayList map = new ArrayList();
 
@@ -76,6 +75,9 @@ public class MapGen : MonoBehaviour {
                 Quaternion no_rotate = new Quaternion(0, 0, 0, 0);
                 switch(tile)
                 {
+                    case '-':
+                        Instantiate(pellet, loc, no_rotate);
+                        break;
                     case 'T':
                         Instantiate(top_double, loc, no_rotate);
                         break;
@@ -88,6 +90,122 @@ public class MapGen : MonoBehaviour {
                     case 'B':
                         Instantiate(bottom_double, loc, no_rotate);
                         break;
+                    case 'Q':
+                        Instantiate(top_left_corner_double, loc, no_rotate);
+                        break;
+                    case 'P':
+                        Instantiate(top_right_corner_double, loc, no_rotate);
+                        break;
+                    case 'Z':
+                        Instantiate(bottom_left_corner_double, loc, no_rotate);
+                        break;
+                    case 'M':
+                        Instantiate(bottom_right_corner_double, loc, no_rotate);
+                        break;
+                    case 'A':
+                        Instantiate(straight_double_top_right_corner, loc, no_rotate);
+                        break;
+                    case 'S':
+                        Instantiate(straight_double_top_left_corner, loc, no_rotate);
+                        break;
+                    case 'W':
+                        Instantiate(small_top_left_corner, loc, no_rotate);
+                        break;
+                    case 'O':
+                        Instantiate(small_top_right_corner, loc, no_rotate);
+                        break;
+                    case 'X':
+                        Instantiate(small_bottom_left_corner, loc, no_rotate);
+                        break;
+                    case 'N':
+                        Instantiate(small_bottom_right_corner, loc, no_rotate);
+                        break;
+                    case 'k':
+                        Instantiate(small_bottom_left_corner, loc, no_rotate);
+                        break;
+                    case ';':
+                        Instantiate(small_bottom_right_corner, loc, no_rotate);
+                        break;
+                    case 'i':
+                        Instantiate(small_left, loc, no_rotate);
+                        break;
+                    case 'o':
+                        Instantiate(small_right, loc, no_rotate);
+                        break;
+                    case 'e':
+                        Instantiate(ghosthouse_top_left_corner, loc, no_rotate);
+                        break;
+                    case 'y':
+                        Instantiate(ghosthouse_top_right_corner, loc, no_rotate);
+                        break;
+                    case 'c':
+                        Instantiate(ghosthouse_bottom_left_corner, loc, no_rotate);
+                        break;
+                    case 'v':
+                        Instantiate(ghosthouse_bottom_right_corner, loc, no_rotate);
+                        break;
+                    case 'a':
+                        Instantiate(ghosthouse_left, loc, no_rotate);
+                        break;
+                    case 's':
+                        Instantiate(ghosthouse_right, loc, no_rotate);
+                        break;
+                    case 'g':
+                        Instantiate(ghosthouse_top, loc, no_rotate);
+                        break;
+                    case 'h':
+                        Instantiate(ghosthouse_bottom, loc, no_rotate);
+                        break;
+                    case 'l':
+                        Instantiate(small_left, loc, no_rotate);
+                        break;
+                    case 'r':
+                        Instantiate(small_right, loc, no_rotate);
+                        break;
+                    case 't':
+                        Instantiate(small_top, loc, no_rotate);
+                        break;
+                    case 'b':
+                        Instantiate(small_bottom, loc, no_rotate);
+                        break;
+                    case 'q':
+                        Instantiate(small_top_left_corner, loc, no_rotate);
+                        break;
+                    case 'p':
+                        Instantiate(small_top_right_corner, loc, no_rotate);
+                        break;
+                    case 'm':
+                        Instantiate(small_bottom_right_corner, loc, no_rotate);
+                        break;
+                    case 'z':
+                        Instantiate(small_bottom_left_corner, loc, no_rotate);
+                        break;
+                    case '1':
+                        Instantiate(big_top_right_corner, loc, no_rotate);
+                        break;
+                    case '2':
+                        Instantiate(big_top_left_corner, loc, no_rotate);
+                        break;
+                    case '3':
+                        Instantiate(big_bottom_left_corner, loc, no_rotate);
+                        break;
+                    case '4':
+                        Instantiate(big_bottom_right_corner, loc, no_rotate);
+                        break;
+                    case '5':
+                        Instantiate(straight_vertical_double_bottom_left_corner, loc, no_rotate);
+                        break;
+                    case '6':
+                        Instantiate(straight_vertical_double_top_left_corner, loc, no_rotate);
+                        break;
+                    case '7':
+                        Instantiate(straight_vertical_double_bottom_right_corner, loc, no_rotate);
+                        break;
+                    case '8':
+                        Instantiate(straight_vertical_double_top_right_corner, loc, no_rotate);
+                        break;
+
+
                 }
             }
         }
