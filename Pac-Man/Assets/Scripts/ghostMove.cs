@@ -17,6 +17,26 @@ public class ghostMove : MonoBehaviour {
         Physics2D.IgnoreCollision(pellet.GetComponent<Collider2D>(), GetComponent<Collider2D>());
     }
 
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "ghost")
+        {
+            dest = (Vector2)transform.position - direction;
+            direction = -direction;
+            if (choosedir == 1)
+                choosedir = 3;
+            else if (choosedir == 3)
+                choosedir = 1;
+            else if (choosedir == 2)
+                choosedir = 4;
+            else
+                choosedir = 1;
+
+            dest.x = Mathf.Round(dest.x);
+            dest.y = Mathf.Round(dest.y);
+        }
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {

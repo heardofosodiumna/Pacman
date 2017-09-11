@@ -6,7 +6,7 @@ public class PelletPickup : MonoBehaviour {
     
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.name == "pacman")
+        if (other.gameObject.tag == "pacman")
         {
             Destroy(this.gameObject);
             ScoreManager.Totalscore += 1;

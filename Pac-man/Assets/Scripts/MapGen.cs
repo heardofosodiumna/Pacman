@@ -45,6 +45,12 @@ public class MapGen : MonoBehaviour {
     public GameObject top_left_corner_single;
     public GameObject top_right_corner_double;
     public GameObject top_right_corner_single;
+    public GameObject ghosthouse_left_door;
+    public GameObject ghosthouse_right_door;
+    public GameObject ghosthouse_door;
+
+    public livesManager lm;
+
 
     public GameObject pellet;
 
@@ -54,6 +60,8 @@ public class MapGen : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        lm.lives = 3;
+        
        string file_path = "map.txt";
         StreamReader input= new StreamReader(file_path);
 
@@ -203,6 +211,15 @@ public class MapGen : MonoBehaviour {
                         break;
                     case '8':
                         Instantiate(straight_vertical_double_top_right_corner, loc, no_rotate);
+                        break;
+                    case '9':
+                        Instantiate(ghosthouse_left_door, loc, no_rotate);
+                        break;
+                    case '0':
+                        Instantiate(ghosthouse_right_door, loc, no_rotate);
+                        break;
+                    case 'd':
+                        Instantiate(ghosthouse_door, loc, no_rotate);
                         break;
 
 

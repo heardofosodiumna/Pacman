@@ -20,6 +20,10 @@ public class ScoreManager : MonoBehaviour {
         Totalscore += 1;
     }
 
+    public static void restartScore()
+    {
+        Totalscore = 0;
+    }
     // Update is called once per frame
     void Update () {
         if (Totalscore < 10)

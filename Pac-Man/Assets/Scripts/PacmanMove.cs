@@ -18,6 +18,7 @@ public class PacmanMove : MonoBehaviour {
         {
             livesManager.death();
             Destroy(this.gameObject);
+            
             Debug.Log("collided");
         }
        
