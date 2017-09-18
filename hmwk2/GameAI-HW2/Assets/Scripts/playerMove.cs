@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class playerMove : MonoBehaviour {
 
+    float speed = 10.0f;
+    Vector3 moveDir = Vector3.zero; 
 	// Use this for initialization
 	void Start () {
 		
@@ -11,6 +13,10 @@ public class playerMove : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        CharacterController controller = GetComponent<CharacterController>();
+        moveDir = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        moveDir = transform.TransformDirection(moveDir);
+        moveDir = moveDir * speed;
+        controller.Move(moveDir * Time.deltaTime);
+    }
 }
