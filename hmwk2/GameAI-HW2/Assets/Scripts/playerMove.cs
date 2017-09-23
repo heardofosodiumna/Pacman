@@ -19,4 +19,10 @@ public class playerMove : MonoBehaviour {
         moveDir = moveDir * speed;
         controller.Move(moveDir * Time.deltaTime);
     }
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if(hit.gameObject.tag == "obj")
+            Destroy(hit.gameObject);
+    }
+
 }
