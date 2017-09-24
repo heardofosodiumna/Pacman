@@ -6,6 +6,7 @@ public class AIScript : MonoBehaviour {
 
     //target we wish to follow
     public GameObject player;
+    Rigidbody2D rb;
     public float speed;
     public float rot_speed;
     public float circle_diam;
@@ -22,12 +23,15 @@ public class AIScript : MonoBehaviour {
     GameObject curr_chase_target;
     public int d_arrive_dist;
     System.Random rnd = new System.Random();
+    public float time_to_target;
+    public float angle_slow;
 
     private void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         GameObject d_arrive_circ = Instantiate(circle, player.transform.position, new Quaternion(0, 0, 0, 0));
         d_arrive_circ.transform.parent = player.transform;
-        d_arrive_circ.transform.localScale = new Vector2(d_arrive_dist / player.transform.localScale.x, d_arrive_dist / player.transform.localScale.y);
+        d_arrive_circ.transform.localScale = new Vector2(d_arrive_dist*2 / player.transform.localScale.x, d_arrive_dist*2 / player.transform.localScale.y);
         curr_chase_target = Instantiate(spot, new Vector2(0, 0), new Quaternion(0, 0, 0, 0));
         curr_chase_target.SetActive(false);
         curr_spot = Instantiate(spot, new Vector2(0, 0), new Quaternion(0, 0, 0, 0));
@@ -59,28 +63,38 @@ public class AIScript : MonoBehaviour {
             //using the distance calculate the direction we must go
             Vector2 player_guess = player.transform.position;
             float dist = (player.transform.position - transform.position).magnitude;
-            player_guess.x += player.GetComponent<CharacterController>().velocity.x * Time.deltaTime * 2 * dist;
-            player_guess.y += player.GetComponent<CharacterController>().velocity.y * Time.deltaTime * 2 * dist;
-            Debug.Log(player.GetComponent<CharacterController>().velocity);
+            player_guess.x += player.GetComponent<CharacterController>().velocity.x * Time.deltaTime * 7 * dist;
+            player_guess.y += player.GetComponent<CharacterController>().velocity.y * Time.deltaTime * 7 * dist;
 
             curr_chase_target.transform.position = player_guess;
 
-
-            Vector2 dir = player_guess - (Vector2)transform.position;
             //using the direction check the angle that we must turn
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            //rotate the character
-            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, q, 90);
+            Align(player.transform.rotation);
             //move towards the player
-            if (dist < d_arrive_dist)
-                transform.Translate(Vector2.right * Time.deltaTime * speed * (dist/d_arrive_dist));
+            Vector2 thrust;
+
+            //Dynamic Arrival
+            if (dist <= d_arrive_dist)
+            {
+                Debug.Log(dist / d_arrive_dist);
+                float target_speed = speed * (dist / d_arrive_dist);
+                Vector2 direction = (curr_chase_target.transform.position - transform.position).normalized;
+                Vector2 target_velocity = target_speed * direction;
+                thrust = target_velocity - (Vector2)gameObject.GetComponent<Rigidbody2D>().velocity;
+                rb.AddForce(thrust/time_to_target);
+            }
             else
-                transform.Translate(Vector2.right * Time.deltaTime * speed);
+            {
+                Vector2 direction = (curr_chase_target.transform.position - transform.position).normalized;
+                Vector2 target_velocity = speed * direction;
+                rb.velocity = target_velocity;
+            }
+            
             update = 0;
         }
         else
         {
+            curr_chase_target.SetActive(false);
             curr_circle.SetActive(true);
             curr_spot.SetActive(true);
             //Dynamic Wander
@@ -97,17 +111,43 @@ public class AIScript : MonoBehaviour {
                 target = curr_spot.transform.position;
 
                 //Rotate towards target
-                Vector2 vectorToTarget = target - (Vector2)transform.position;
+                /*Vector2 vectorToTarget = target - (Vector2)transform.position;
                 float new_angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-                turn = Quaternion.AngleAxis(new_angle, Vector3.forward);
+                turn = Quaternion.AngleAxis(new_angle, Vector3.forward);*/
                 update = update_dur;
             }
-
+    
             //Move in current facing direction
-            transform.rotation = Quaternion.Slerp(transform.rotation, turn, Time.deltaTime * rot_speed);
-            transform.Translate(Vector2.right * Time.deltaTime * speed);
+            Seek(target);
+
+            Vector2 direction = target - (Vector2)transform.position;
+            float target_angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            Align(Quaternion.AngleAxis(target_angle, Vector3.forward));
+            //transform.rotation = Quaternion.Slerp(transform.rotation, turn, Time.deltaTime * rot_speed);
+            //transform.Translate(Vector2.right * Time.deltaTime * speed);
         }
-        
+    }
+
+    private void Seek(Vector2 target_pos)
+    {
+        Vector2 direction = (target_pos - (Vector2)transform.position).normalized;
+        transform.GetComponent<Rigidbody2D>().velocity = direction * speed;
+    }
+
+    private void Align(Quaternion target_orientation)
+    {
+        float angle_dist = target_orientation.eulerAngles.z - transform.rotation.eulerAngles.z;
+        if (angle_dist < 0)
+            angle_dist *= -1;
+        if (angle_dist < angle_slow)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, target_orientation, Time.deltaTime * rot_speed / (angle_dist * angle_slow));
+        }
+        else
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, target_orientation, Time.deltaTime * rot_speed);
+        }
+            
     }
     /*
      * 1. rotation	=	target.orientation	-character.orientation

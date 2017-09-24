@@ -108,6 +108,49 @@ NavMeshSettings:
     tileSize: 256
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &456444845
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 456444847}
+  - component: {fileID: 456444846}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &456444846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 456444845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420043abfb2e15441b2060b5bdad75dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cheese: {fileID: 1171043947312260, guid: 3854fa3ae2d69474d83ba8a9ca1436b2, type: 2}
+  div: 12
+  count: 12
+--- !u!4 &456444847
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 456444845}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.89068925, y: 3.6555808, z: -28.648438}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &526937186
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,14 +326,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1096419306}
   speed: 3
-  rot_speed: 3
-  circle_diam: 5
+  rot_speed: 50
+  circle_diam: 8
   circle_dist: 10
   update_dur: 30
   circle: {fileID: 1756400916288780, guid: 67dd0ec8a9efaf44a89875d5f06375a3, type: 2}
   spot: {fileID: 1076445233981752, guid: 0fd0b1f1ab6bfb64183079f369fc0413, type: 2}
   catch_radius: 10
   d_arrive_dist: 5
+  time_to_target: 0.5
+  angle_slow: 30
 --- !u!50 &1016342498
 Rigidbody2D:
   serializedVersion: 4
@@ -395,7 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a15f788cc3003c341a8a643859d4d79f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 4
 --- !u!143 &1096419310
 CharacterController:
   m_ObjectHideFlags: 0
@@ -489,7 +534,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1310563304}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 88.18, y: 45.7, z: 2}
   m_Children: []
   m_Father: {fileID: 0}
