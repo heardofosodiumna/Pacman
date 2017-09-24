@@ -281,7 +281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d13eaa9f0f322479101c18f392514c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1096419308}
+  player: {fileID: 1096419306}
   speed: 3
   rot_speed: 3
   circle_diam: 5
@@ -289,7 +289,8 @@ MonoBehaviour:
   update_dur: 30
   circle: {fileID: 1756400916288780, guid: 67dd0ec8a9efaf44a89875d5f06375a3, type: 2}
   spot: {fileID: 1076445233981752, guid: 0fd0b1f1ab6bfb64183079f369fc0413, type: 2}
-  catch_radius: 5
+  catch_radius: 10
+  d_arrive_dist: 5
 --- !u!50 &1016342498
 Rigidbody2D:
   serializedVersion: 4
@@ -319,8 +320,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1096419308}
   - component: {fileID: 1096419307}
-  - component: {fileID: 1096419309}
   - component: {fileID: 1096419310}
+  - component: {fileID: 1096419309}
   m_Layer: 0
   m_Name: Jerry
   m_TagString: Untagged
@@ -394,6 +395,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a15f788cc3003c341a8a643859d4d79f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 2
 --- !u!143 &1096419310
 CharacterController:
   m_ObjectHideFlags: 0
