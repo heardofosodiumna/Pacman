@@ -11,49 +11,44 @@ public class playerMove : MonoBehaviour {
     Vector2 closestPoint;
     float aDist;
     float shortestDist;
-    CharacterController controller;
+    bool wasEvading = false;
+   // CharacterController controller;
     Quaternion turn;
     int targetIndex = 0;
+    public GameObject enemy;
+    float distEnemy;
+    Rigidbody2D rb;
 
-    bool control = true;
+    bool control = false;
     // Update is called once per frame
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+       // controller = GetComponent<CharacterController>();
         pathScript = pathScript.GetComponent<spawnCheese>();
+        rb = GetComponent<Rigidbody2D>();
         path = pathScript.points;
     }
     private void FixedUpdate () {
-        if (Input.GetKeyDown("space"))
-            control = !control;
-        if (control)
+     
+        //path follow
+        if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
+            gameObject.GetComponent<SpriteRenderer>().flipY = true;
+        else
+            gameObject.GetComponent<SpriteRenderer>().flipY = false;
+        distEnemy = Vector2.Distance(enemy.transform.position, transform.position);
+        //  Debug.Log("distEnemy: " + distEnemy);
+        if (distEnemy > 3.5)
         {
-            if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
-                gameObject.GetComponent<SpriteRenderer>().flipY = true;
-            else
-                gameObject.GetComponent<SpriteRenderer>().flipY = false;
-
-           
-            moveDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            moveDir = transform.TransformDirection(moveDir);
-            moveDir = moveDir * speed;
-            controller.Move(moveDir * Time.deltaTime);
-        }else
-        { 
-            if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
-                gameObject.GetComponent<SpriteRenderer>().flipY = true;
-            else
-                gameObject.GetComponent<SpriteRenderer>().flipY = false;
 
             closestPoint = path[0];
             shortestDist = Mathf.Sqrt(((closestPoint.x - transform.position.x) * (closestPoint.x - transform.position.x)) + ((closestPoint.y - transform.position.y) * (closestPoint.y - transform.position.y)));
             foreach (Vector2 p in path)
             {
-               // Debug.Log("shortest is: " + shortestDist + " at point: " + closestPoint);
+                // Debug.Log("shortest is: " + shortestDist + " at point: " + closestPoint);
 
                 aDist = Mathf.Sqrt(((p.x - transform.position.x) * (p.x - transform.position.x)) + ((p.y - transform.position.y) * (p.y - transform.position.y)));
-               // Debug.Log("calculatiions is: " + aDist + " at point: " + p);
+                // Debug.Log("calculatiions is: " + aDist + " at point: " + p);
 
                 if (aDist <= shortestDist)
                 {
@@ -69,19 +64,39 @@ public class playerMove : MonoBehaviour {
             Vector2 vectorToTarget = target - (Vector2)transform.position;
             float new_angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
             turn = Quaternion.AngleAxis(new_angle, Vector3.forward);
-         
+
             //Move in current facing direction
             transform.rotation = Quaternion.Slerp(transform.rotation, turn, Time.deltaTime * 3);
-            transform.Translate(Vector2.right * Time.deltaTime * speed);
+            //rb.AddForce(transform.right * speed);
+            rb.velocity = (transform.right * speed);
+               
+                
+        }
+        else
+        {
+            //evade
+            Debug.Log("evading");
 
+
+            float t = distEnemy / enemy.GetComponent<AIScript>().speed;
+          //  Vector2 targetPoint = (Vector2)TargetAgent.transform.position + TargetAgent.CurrentVelocity * t;
+
+           // return -(((targetPoint - (Vector2)transform.position).normalized * agent.MaxVelocity) - agent.CurrentVelocity)
+
+
+            wasEvading = true;
         }
 
+        
+
     }
-    void OnTriggerEnter(Collider other)
+
+    void OnTriggerEnter2D(Collider2D coll)
     {
-        Debug.Log("cleared: " + path[targetIndex]);
+        
+       // Debug.Log("cleared: " );
         path.Remove(path[targetIndex]);
-        Debug.Log("seeking: " + path[targetIndex]);
+      //  Debug.Log("seeking: " + path[targetIndex]);
     }
     /*
      *  public SteeringAgent TargetAgent;
