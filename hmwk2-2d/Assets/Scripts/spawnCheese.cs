@@ -29,20 +29,19 @@ public class spawnCheese : MonoBehaviour {
             points.Add(point);
             Instantiate(cheese, point, Quaternion.identity);
         }
-        points.Add(pos2);
 
         Vector2 pos3 = new Vector2(Random.Range(24f, 28f), Random.Range(7f, 9f));
         howFar = (int)Mathf.Sqrt(((pos3.x - pos2.x) * (pos3.x - pos2.x)) + ((pos3.y - pos2.y) * (pos3.x - pos2.x)));
     //    Debug.Log(howFar);
         howMany = howFar / div;
-        for (int i = 0; i < count/2-1; ++i)
+        for (int i = 0; i < count/2; ++i)
         {
              point = Vector2.MoveTowards(point, pos3, howMany);
              point += new Vector2(0, Random.Range(0f, 2f));
              points.Add(point);
              Instantiate(cheese, point, Quaternion.identity);
         }
-        for (int i = 0; i < count / 2 - 1; ++i)
+        for (int i = 0; i < count / 2 ; ++i)
         {
             point = Vector2.MoveTowards(point, pos3, howMany);
             point += new Vector2(0, Random.Range(-3f, 0f));
@@ -53,15 +52,14 @@ public class spawnCheese : MonoBehaviour {
         howFar = (int)Mathf.Sqrt(((pos4.x - pos3.x) * (pos4.x - pos3.x)) + ((pos4.y - pos3.y) * (pos4.x - pos3.x)));
     //    Debug.Log(howFar);
         howMany = howFar / div;
-        for (int i = 0; i < count-3; ++i)
+        for (int i = 0; i < count; ++i)
         {
             point = Vector2.MoveTowards(point, pos4, howMany);
             point += new Vector2(0, Random.Range(0f, 1f));
             points.Add(point);
             Instantiate(cheese, point, Quaternion.identity);
         }
-
-        points.Add(pos4);
+       
 
     }
 
