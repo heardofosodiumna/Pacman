@@ -197,6 +197,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &571557712 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114821828219962032, guid: 76edb7962c138164888aa0e43637ad6e,
+    type: 2}
+  m_PrefabInternal: {fileID: 2060337038}
+  m_Script: {fileID: 11500000, guid: 420043abfb2e15441b2060b5bdad75dd, type: 3}
 --- !u!1 &1016342494
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,8 +326,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1096419308}
   - component: {fileID: 1096419307}
-  - component: {fileID: 1096419310}
   - component: {fileID: 1096419309}
+  - component: {fileID: 1096419310}
+  - component: {fileID: 1096419311}
   m_Layer: 0
   m_Name: Jerry
   m_TagString: Untagged
@@ -395,24 +402,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a15f788cc3003c341a8a643859d4d79f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
---- !u!143 &1096419310
-CharacterController:
+  speed: 3
+  pathScript: {fileID: 571557712}
+  enemy: {fileID: 1016342494}
+--- !u!50 &1096419310
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1096419306}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!61 &1096419311
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1096419306}
+  m_Enabled: 1
+  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1.86, y: 1.3}
+    newSize: {x: 1.86, y: 1.3}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Height: 1.3
-  m_Radius: 0.93
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.86, y: 1.3}
+  m_EdgeRadius: 0
 --- !u!1 &1310563304
 GameObject:
   m_ObjectHideFlags: 0
@@ -495,3 +532,45 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2060337038
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4265100114865676, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0.89068925
+      objectReference: {fileID: 0}
+    - target: {fileID: 4265100114865676, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 3.6555808
+      objectReference: {fileID: 0}
+    - target: {fileID: 4265100114865676, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -28.648438
+      objectReference: {fileID: 0}
+    - target: {fileID: 4265100114865676, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4265100114865676, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4265100114865676, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4265100114865676, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4265100114865676, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 76edb7962c138164888aa0e43637ad6e, type: 2}
+  m_IsPrefabParent: 0

@@ -11,6 +11,7 @@ public class playerMove : MonoBehaviour {
     Vector2 closestPoint;
     float aDist;
     float shortestDist;
+    bool wasEvading = false;
    // CharacterController controller;
     Quaternion turn;
     int targetIndex = 0;
@@ -29,78 +30,64 @@ public class playerMove : MonoBehaviour {
         path = pathScript.points;
     }
     private void FixedUpdate () {
-        if (Input.GetKeyDown("space"))
-            control = !control;
-        if (control)
+     
+        //path follow
+        if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
+            gameObject.GetComponent<SpriteRenderer>().flipY = true;
+        else
+            gameObject.GetComponent<SpriteRenderer>().flipY = false;
+        distEnemy = Vector2.Distance(enemy.transform.position, transform.position);
+        //  Debug.Log("distEnemy: " + distEnemy);
+        if (distEnemy > 3.5)
         {
-            if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
-                gameObject.GetComponent<SpriteRenderer>().flipY = true;
-            else
-                gameObject.GetComponent<SpriteRenderer>().flipY = false;
 
-           
-            moveDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            moveDir = transform.TransformDirection(moveDir);
-            moveDir = moveDir * speed;
-           // controller.Move(moveDir * Time.deltaTime);
-        }else
-        { 
-            //path follow
-            if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
-                gameObject.GetComponent<SpriteRenderer>().flipY = true;
-            else
-                gameObject.GetComponent<SpriteRenderer>().flipY = false;
-            distEnemy = Vector2.Distance(enemy.transform.position, transform.position);
-          //  Debug.Log("distEnemy: " + distEnemy);
-            if (distEnemy > 3.5)
+            closestPoint = path[0];
+            shortestDist = Mathf.Sqrt(((closestPoint.x - transform.position.x) * (closestPoint.x - transform.position.x)) + ((closestPoint.y - transform.position.y) * (closestPoint.y - transform.position.y)));
+            foreach (Vector2 p in path)
             {
+                // Debug.Log("shortest is: " + shortestDist + " at point: " + closestPoint);
 
-                closestPoint = path[0];
-                shortestDist = Mathf.Sqrt(((closestPoint.x - transform.position.x) * (closestPoint.x - transform.position.x)) + ((closestPoint.y - transform.position.y) * (closestPoint.y - transform.position.y)));
-                foreach (Vector2 p in path)
+                aDist = Mathf.Sqrt(((p.x - transform.position.x) * (p.x - transform.position.x)) + ((p.y - transform.position.y) * (p.y - transform.position.y)));
+                // Debug.Log("calculatiions is: " + aDist + " at point: " + p);
+
+                if (aDist <= shortestDist)
                 {
-                    // Debug.Log("shortest is: " + shortestDist + " at point: " + closestPoint);
-
-                    aDist = Mathf.Sqrt(((p.x - transform.position.x) * (p.x - transform.position.x)) + ((p.y - transform.position.y) * (p.y - transform.position.y)));
-                    // Debug.Log("calculatiions is: " + aDist + " at point: " + p);
-
-                    if (aDist <= shortestDist)
-                    {
-                        closestPoint = p;
-                        shortestDist = aDist;
-                    }
+                    closestPoint = p;
+                    shortestDist = aDist;
                 }
-                // Debug.Log("closestPoint: " + closestPoint);
-                //closestPoint;
-                Vector2 target = path[targetIndex];
+            }
+            // Debug.Log("closestPoint: " + closestPoint);
+            //closestPoint;
+            Vector2 target = path[targetIndex];
 
-                //Rotate towards target
-                Vector2 vectorToTarget = target - (Vector2)transform.position;
-                float new_angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-                turn = Quaternion.AngleAxis(new_angle, Vector3.forward);
+            //Rotate towards target
+            Vector2 vectorToTarget = target - (Vector2)transform.position;
+            float new_angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+            turn = Quaternion.AngleAxis(new_angle, Vector3.forward);
 
-                //Move in current facing direction
-                transform.rotation = Quaternion.Slerp(transform.rotation, turn, Time.deltaTime * 3);
-                //rb.AddForce(transform.right * speed);
-                rb.velocity = (transform.right * speed);
+            //Move in current facing direction
+            transform.rotation = Quaternion.Slerp(transform.rotation, turn, Time.deltaTime * 3);
+            //rb.AddForce(transform.right * speed);
+            rb.velocity = (transform.right * speed);
                
                 
-            }
-            else
-            {
-                //evade
-                Debug.Log(enemy.GetComponent<Rigidbody2D>().velocity);
-                /*
-                float t = distEnemy
-                // t is distance divied by max velocity
-                float t = distance / TargetAgent.MaxVelocity;
-                //point will be the Vec2 of target position + currentvel times t
-                Vector2 targetPoint = (Vector2)TargetAgent.transform.position + TargetAgent.CurrentVelocity * t;
-                //return the (target point - position).normlized * max veloxcity) - agent current velocity
-                return -(((targetPoint - (Vector2)transform.position).normalized * agent.MaxVelocity) - agent.CurrentVelocity);*/
-            }
-
         }
+        else
+        {
+            //evade
+            Debug.Log("evading");
+
+
+            float t = distEnemy / enemy.GetComponent<AIScript>().speed;
+          //  Vector2 targetPoint = (Vector2)TargetAgent.transform.position + TargetAgent.CurrentVelocity * t;
+
+           // return -(((targetPoint - (Vector2)transform.position).normalized * agent.MaxVelocity) - agent.CurrentVelocity)
+
+
+            wasEvading = true;
+        }
+
+        
 
     }
 
