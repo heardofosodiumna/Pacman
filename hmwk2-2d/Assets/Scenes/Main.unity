@@ -108,7 +108,9 @@ NavMeshSettings:
     tileSize: 256
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
+
 --- !u!1 &186447321
+
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -437,14 +439,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1096419306}
   speed: 3
-  rot_speed: 3
-  circle_diam: 5
+  rot_speed: 50
+  circle_diam: 8
   circle_dist: 10
   update_dur: 30
   circle: {fileID: 1756400916288780, guid: 67dd0ec8a9efaf44a89875d5f06375a3, type: 2}
   spot: {fileID: 1076445233981752, guid: 0fd0b1f1ab6bfb64183079f369fc0413, type: 2}
   catch_radius: 10
   d_arrive_dist: 5
+  time_to_target: 0.5
+  angle_slow: 30
 --- !u!50 &1016342498
 Rigidbody2D:
   serializedVersion: 4
@@ -736,7 +740,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1310563304}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 88.18, y: 45.7, z: 2}
   m_Children: []
   m_Father: {fileID: 0}
