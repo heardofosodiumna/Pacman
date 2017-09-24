@@ -22,6 +22,8 @@ public class AIScript : MonoBehaviour {
     GameObject curr_chase_target;
     public int d_arrive_dist;
     System.Random rnd = new System.Random();
+    public float time_to_target;
+    public float angle_slow;
 
     private void Start()
     {
@@ -59,35 +61,46 @@ public class AIScript : MonoBehaviour {
             //using the distance calculate the direction we must go
             Vector2 player_guess = player.transform.position;
             float dist = (player.transform.position - transform.position).magnitude;
-            player_guess.x += player.GetComponent<CharacterController>().velocity.x * Time.deltaTime * 2 * dist;
-            player_guess.y += player.GetComponent<CharacterController>().velocity.y * Time.deltaTime * 2 * dist;
-            Debug.Log(player.GetComponent<CharacterController>().velocity);
+            player_guess.x += player.GetComponent<CharacterController>().velocity.x * Time.deltaTime * 3 * dist;
+            player_guess.y += player.GetComponent<CharacterController>().velocity.y * Time.deltaTime * 3 * dist;
 
             curr_chase_target.transform.position = player_guess;
 
-
-            Vector2 dir = player_guess - (Vector2)transform.position;
             //using the direction check the angle that we must turn
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            //rotate the character
-            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, q, 90);
+            align(player.transform.rotation);
             //move towards the player
+            Vector2 thrust;
             if (dist < d_arrive_dist)
+            {//make this work like slides!
+                float target_speed = speed * (dist / d_arrive_dist);
+                Vector2 direction = (player.transform.position - transform.position).normalized;
+                Vector2 target_velocity = target_speed * direction;
+                thrust = target_velocity - (Vector2)gameObject.GetComponent<Rigidbody2D>().velocity;
+            }
+            else
+            {
+                Vector2 direction = (player.transform.position - transform.position).normalized;
+                Vector2 target_velocity = speed * direction;
+                //target_velocity = speed * (new Vector2(Mathf.Cos(transform.rotation.ToEulerAngles().x), Mathf.Sin(transform.rotation.ToEulerAngles().y)));
+                thrust = target_velocity - gameObject.GetComponent<Rigidbody2D>().velocity;
+            }
+            gameObject.GetComponent<Rigidbody2D>().AddForce(thrust/time_to_target);
+            /*if (dist < d_arrive_dist)
                 transform.Translate(Vector2.right * Time.deltaTime * speed * (dist/d_arrive_dist));
             else
-                transform.Translate(Vector2.right * Time.deltaTime * speed);
+                transform.Translate(Vector2.right * Time.deltaTime * speed);*/
             update = 0;
         }
         else
         {
+            curr_chase_target.SetActive(false);
             curr_circle.SetActive(true);
             curr_spot.SetActive(true);
             //Dynamic Wander
             update--;
             if (update <= 0)
             {
-                float angle = rnd.Next(0, 360);
+                float angle = rnd.Next(0, 180);
                 angle *= Mathf.Deg2Rad;
 
                 float x = circle_diam/2 * Mathf.Cos(angle);
@@ -97,17 +110,39 @@ public class AIScript : MonoBehaviour {
                 target = curr_spot.transform.position;
 
                 //Rotate towards target
-                Vector2 vectorToTarget = target - (Vector2)transform.position;
+                /*Vector2 vectorToTarget = target - (Vector2)transform.position;
                 float new_angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-                turn = Quaternion.AngleAxis(new_angle, Vector3.forward);
+                turn = Quaternion.AngleAxis(new_angle, Vector3.forward);*/
                 update = update_dur;
             }
 
             //Move in current facing direction
-            transform.rotation = Quaternion.Slerp(transform.rotation, turn, Time.deltaTime * rot_speed);
-            transform.Translate(Vector2.right * Time.deltaTime * speed);
+            seek(target);
+            Debug.Log("1 " + (target-(Vector2)transform.position).normalized);
+            Debug.Log("3 " + Quaternion.LookRotation((target - (Vector2)transform.position)).eulerAngles);
+
+            align(Quaternion.LookRotation((target - (Vector2)transform.position).normalized));
+            //transform.rotation = Quaternion.Slerp(transform.rotation, turn, Time.deltaTime * rot_speed);
+            //transform.Translate(Vector2.right * Time.deltaTime * speed);
         }
+    }
+
+    private void seek(Vector2 target_pos)
+    {
+        Vector2 direction = (target_pos - (Vector2)transform.position).normalized;
+        transform.GetComponent<Rigidbody2D>().velocity = direction * speed;
+    }
+
+    private void align(Quaternion target_orientation)
+    {
+        float angle_dist = target_orientation.eulerAngles.z - transform.rotation.eulerAngles.z;
         
+        if (angle_dist < angle_slow)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, target_orientation, rot_speed / (angle_dist * angle_slow));
+        }
+        else
+            transform.rotation = Quaternion.Slerp(transform.rotation, target_orientation, rot_speed);
     }
     /*
      * 1. rotation	=	target.orientation	-character.orientation
