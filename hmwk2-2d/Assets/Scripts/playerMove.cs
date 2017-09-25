@@ -45,7 +45,14 @@ public class playerMove : MonoBehaviour {
         evade_circ.transform.parent = transform;
     }
     private void FixedUpdate () {
-     
+        if (wasEvading == true) {
+            jerrytext.behavior = "Dynamic Evade";
+        }
+        else
+        {
+            jerrytext.behavior = "Pathfinding";
+        }
+
         //path follow
         if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
             gameObject.GetComponent<SpriteRenderer>().flipY = true;
@@ -55,27 +62,10 @@ public class playerMove : MonoBehaviour {
         //  Debug.Log("distEnemy: " + distEnemy);
         if (distEnemy > evade_rad && evading_dur <= 0)
         {
+            wasEvading = false;
             update = 0;
             speed = 3;
-            /*if(curr_path_index >= 0)
-             {
-                 if((Vector2)transform.position == path[curr_path_index])
-                 {
-                     curr_path_index++;
-                 }
-
-                 Vector2 target = path[curr_path_index];
-                 //Rotate towards target
-                 Vector2 vectorToTarget = target - (Vector2)transform.position;
-                 float new_angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-                 turn = Quaternion.AngleAxis(new_angle, Vector3.forward);
-
-                 //Move in current facing direction
-                 transform.rotation = Quaternion.Slerp(transform.rotation, turn, Time.deltaTime * 3);
-                 //rb.AddForce(transform.right * speed);
-                 rb.velocity = (transform.right * speed);
-
-             }*/
+            
             closestPoint = path[0];
             shortestDist = Mathf.Sqrt(((closestPoint.x - transform.position.x) * (closestPoint.x - transform.position.x)) + ((closestPoint.y - transform.position.y) * (closestPoint.y - transform.position.y)));
             foreach (Vector2 p in path)

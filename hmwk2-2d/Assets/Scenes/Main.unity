@@ -194,6 +194,7 @@ GameObject:
   - component: {fileID: 186447322}
   - component: {fileID: 186447324}
   - component: {fileID: 186447323}
+  - component: {fileID: 186447325}
   m_Layer: 5
   m_Name: Tom
   m_TagString: Untagged
@@ -258,6 +259,17 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 186447321}
+--- !u!114 &186447325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 186447321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9606a108d5345842b44e403d96a3832, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &207533410
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,6 +375,7 @@ GameObject:
   - component: {fileID: 261813033}
   - component: {fileID: 261813035}
   - component: {fileID: 261813034}
+  - component: {fileID: 261813036}
   m_Layer: 5
   m_Name: Jerry
   m_TagString: Untagged
@@ -427,6 +440,17 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 261813032}
+--- !u!114 &261813036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 261813032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 413951ca5c052f4468631a8e273a13dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &526937186
 GameObject:
   m_ObjectHideFlags: 0
@@ -702,6 +726,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d13eaa9f0f322479101c18f392514c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: Dynamic Wander
   player: {fileID: 1096419306}
   speed: 5
   rot_speed: 2

@@ -5,6 +5,7 @@ using UnityEngine;
 public class AIScript : MonoBehaviour {
 
     //target we wish to follow
+    public string state = "Dynamic Wander";
     public GameObject player;
     Rigidbody2D rb;
     public float speed;
@@ -50,6 +51,7 @@ public class AIScript : MonoBehaviour {
 
     // Update is called once per frame
     private void FixedUpdate() {
+        tomtext.behavior = state;
         if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
             gameObject.GetComponent<SpriteRenderer>().flipY = true;
         else
@@ -69,6 +71,7 @@ public class AIScript : MonoBehaviour {
         //Dynamic Pursue
         if ((player.transform.position - transform.position).magnitude < pursue_rad)
         {
+            
             curr_chase_target.SetActive(true);
             curr_circle.SetActive(false);
             curr_spot.SetActive(false);
@@ -88,6 +91,7 @@ public class AIScript : MonoBehaviour {
             //Dynamic Arrival
             if (dist <= d_arrive_dist)
             {
+                state = "Dynamic Arrival";
                 float target_speed = speed * (dist / d_arrive_dist);
                 Vector2 direction = (curr_chase_target.transform.position - transform.position).normalized;
                 Vector2 target_velocity = target_speed * direction;
@@ -96,6 +100,7 @@ public class AIScript : MonoBehaviour {
             }
             else
             {
+                state = "Dynamic Pursue";
                 Vector2 direction = (curr_chase_target.transform.position - transform.position).normalized;
                 Vector2 target_velocity = speed * direction;
                 rb.velocity = target_velocity;
@@ -105,6 +110,7 @@ public class AIScript : MonoBehaviour {
         }
         else
         {
+            state = "Dynamic Wander";
             curr_chase_target.SetActive(false);
             curr_circle.SetActive(true);
             curr_spot.SetActive(true);
