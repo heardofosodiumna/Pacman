@@ -107,7 +107,7 @@ public class playerMove : MonoBehaviour {
             if(evading_dur <= 0)
                 evading_dur = 60;
             evading_dur--;
-            speed = 4;
+            speed = 5;
             //float t = distEnemy / enemy.GetComponent<AIScript>().speed;
 
             //using the distance to calulate predicted location
