@@ -67,4 +67,12 @@ public class spawnCheese : MonoBehaviour {
     {
         return points;
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown("r"))
+        {
+            Application.LoadLevel(0);
+        }
+    }
 }

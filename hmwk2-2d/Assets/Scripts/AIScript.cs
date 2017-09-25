@@ -19,7 +19,7 @@ public class AIScript : MonoBehaviour {
     GameObject curr_spot;
     GameObject curr_circle;
     Quaternion turn;
-    public int catch_radius;
+    public int pursue_rad;
     GameObject curr_chase_target;
     public int d_arrive_dist;
     System.Random rnd = new System.Random();
@@ -35,9 +35,9 @@ public class AIScript : MonoBehaviour {
         curr_chase_target = Instantiate(spot, new Vector2(0, 0), new Quaternion(0, 0, 0, 0));
         curr_chase_target.SetActive(false);
         curr_spot = Instantiate(spot, new Vector2(0, 0), new Quaternion(0, 0, 0, 0));
-        GameObject track_circ = Instantiate(circle, new Vector2(0, 0), new Quaternion(0, 0, 0, 0));
+        GameObject track_circ = Instantiate(circle, new Vector2(transform.position.x, transform.position.y), new Quaternion(0, 0, 0, 0));
         track_circ.transform.parent = gameObject.transform;
-        track_circ.transform.localScale = 2 * catch_radius * new Vector2(1 / transform.localScale.x, 1 / transform.localScale.y);
+        track_circ.transform.localScale = 2 * pursue_rad * new Vector2(1 / transform.localScale.x, 1 / transform.localScale.y);
 
         curr_circle = Instantiate(circle, new Vector2(0,0), new Quaternion(0, 0, 0, 0));
         curr_spot.transform.parent = curr_circle.transform;
@@ -54,8 +54,20 @@ public class AIScript : MonoBehaviour {
             gameObject.GetComponent<SpriteRenderer>().flipY = true;
         else
             gameObject.GetComponent<SpriteRenderer>().flipY = false;
+        Vector3 vel = rb.velocity;
+        if (transform.position.x > 35 || transform.position.x < -35)
+        {
+            transform.Rotate(0, 0, 180);
+            //rb.velocity = new Vector3(-vel.x, vel.y, vel.z);
+        }
+        if (transform.position.y > 17 || transform.position.y < -17)
+        {
+            transform.Rotate(0, 0, 180);
+            //rb.velocity = new Vector3(vel.x, -vel.y, vel.z);
+        }
+            
         //Dynamic Pursue
-        if ((player.transform.position - transform.position).magnitude < catch_radius)
+        if ((player.transform.position - transform.position).magnitude < pursue_rad)
         {
             curr_chase_target.SetActive(true);
             curr_circle.SetActive(false);
@@ -63,8 +75,8 @@ public class AIScript : MonoBehaviour {
             //using the distance calculate the direction we must go
             Vector2 player_guess = player.transform.position;
             float dist = (player.transform.position - transform.position).magnitude;
-            player_guess.x += player.GetComponent<CharacterController>().velocity.x * Time.deltaTime * 7 * dist;
-            player_guess.y += player.GetComponent<CharacterController>().velocity.y * Time.deltaTime * 7 * dist;
+            player_guess.x += player.GetComponent<Rigidbody2D>().velocity.x * dist/speed;
+            player_guess.y += player.GetComponent<Rigidbody2D>().velocity.y * dist/speed;
 
             curr_chase_target.transform.position = player_guess;
 
@@ -76,12 +88,11 @@ public class AIScript : MonoBehaviour {
             //Dynamic Arrival
             if (dist <= d_arrive_dist)
             {
-                Debug.Log(dist / d_arrive_dist);
                 float target_speed = speed * (dist / d_arrive_dist);
                 Vector2 direction = (curr_chase_target.transform.position - transform.position).normalized;
                 Vector2 target_velocity = target_speed * direction;
                 thrust = target_velocity - (Vector2)gameObject.GetComponent<Rigidbody2D>().velocity;
-                rb.AddForce(thrust/time_to_target);
+                rb.AddForce(thrust/(dist/speed));
             }
             else
             {
@@ -128,12 +139,6 @@ public class AIScript : MonoBehaviour {
         }
     }
 
-    private void Seek(Vector2 target_pos)
-    {
-        Vector2 direction = (target_pos - (Vector2)transform.position).normalized;
-        transform.GetComponent<Rigidbody2D>().velocity = direction * speed;
-    }
-
     private void Align(Quaternion target_orientation)
     {
         float angle_dist = target_orientation.eulerAngles.z - transform.rotation.eulerAngles.z;
@@ -141,13 +146,18 @@ public class AIScript : MonoBehaviour {
             angle_dist *= -1;
         if (angle_dist < angle_slow)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, target_orientation, Time.deltaTime * rot_speed / (angle_dist * angle_slow));
+            transform.rotation = Quaternion.Slerp(transform.rotation, target_orientation, Time.deltaTime * rot_speed / (angle_dist / angle_slow));
         }
         else
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, target_orientation, Time.deltaTime * rot_speed);
         }
-            
+    }
+
+    private void Seek(Vector2 target_pos)
+    {
+        Vector2 direction = (target_pos - (Vector2)transform.position).normalized;
+        transform.GetComponent<Rigidbody2D>().velocity = direction * speed;
     }
     /*
      * 1. rotation	=	target.orientation	-character.orientation
