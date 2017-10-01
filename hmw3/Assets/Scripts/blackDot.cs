@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class blackDotPath : MonoBehaviour {
+public class blackDot : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

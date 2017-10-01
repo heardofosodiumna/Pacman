@@ -6,7 +6,7 @@ public class Wander : MonoBehaviour {
 
     public GameObject circle;
     public GameObject spot;
-    public float speed;
+    public float max_acceleration;
     GameObject curr_circle;
     GameObject curr_spot;
     GameObject curr_chase_target;
@@ -18,42 +18,31 @@ public class Wander : MonoBehaviour {
     Vector2 target;
     public int angle_slow;
     public int rot_speed;
-    public GameObject[] flock;
+    public GameObject yellow_birds;
+    Transform[] flock;
+    public int k;
 
     private void Start()
     {
-        curr_spot = Instantiate(spot, new Vector2(0, 0), new Quaternion(0, 0, 0, 0));
-
-        curr_circle = Instantiate(circle, new Vector2(0, 0), new Quaternion(0, 0, 0, 0));
-        curr_spot.transform.parent = curr_circle.transform;
-        curr_spot.transform.localScale = new Vector2(1 / transform.localScale.x, 1 / transform.localScale.y);
-        curr_circle.transform.Rotate(new Vector2(0, 0));
-        curr_circle.transform.localScale = new Vector2(circle_diam / transform.localScale.x, circle_diam / transform.localScale.y);
-        curr_circle.transform.parent = gameObject.transform;
-        curr_circle.transform.localPosition = Vector2.right * circle_dist;
+        flock = yellow_birds.GetComponentsInChildren<Transform>();
     }
 
 	private void FixedUpdate()
     {
+        Debug.Log(flock);
         for(int i = 0; i < flock.Length; i++)
         {
             Debug.Log(flock[i].transform.position);
-<<<<<<< HEAD
-
             //Separate
-            foreach(bird in flock)
-            { 
+            foreach(Transform bird in flock)
+            {
+                Vector2 direction = transform.position - bird.position;
+                float distance = direction.magnitude;
+                float strength = Mathf.Min(k / (distance * distance), max_acceleration);
 
+                GetComponent<Rigidbody2D>().AddForce(direction.normalized * strength);
             }
-=======
->>>>>>> 6fb3b67b4f17d3eadbdc9590ce376949b611e629
         }
-        /*Seek(target);
-
-        Vector2 direction = target - (Vector2)transform.position;
-        float target_angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        Align(Quaternion.AngleAxis(target_angle, Vector3.forward));
-        */
     }
 
     private void ConeCheck()
@@ -63,8 +52,7 @@ public class Wander : MonoBehaviour {
 
     private void Seek(Vector2 target_pos)
     {
-        Vector2 direction = (target_pos - (Vector2)transform.position).normalized;
-        transform.GetComponent<Rigidbody2D>().velocity = direction * speed;
+        Debug.Log("Redo for dynamic");
     }
 
     private void Align(Quaternion target_orientation)
