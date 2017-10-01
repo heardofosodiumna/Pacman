@@ -37,7 +37,7 @@ public class Wander : MonoBehaviour {
     {
         for(int i = 0; i < flock.Length; i++)
         {
-            Debug.Log(flock[i].transform.position);454
+            Debug.Log(flock[i].transform.position);
         }
         /*Seek(target);
 
