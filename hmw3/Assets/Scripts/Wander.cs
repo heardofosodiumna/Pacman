@@ -38,12 +38,15 @@ public class Wander : MonoBehaviour {
         for(int i = 0; i < flock.Length; i++)
         {
             Debug.Log(flock[i].transform.position);
+<<<<<<< HEAD
 
             //Separate
             foreach(bird in flock)
             { 
 
             }
+=======
+>>>>>>> 6fb3b67b4f17d3eadbdc9590ce376949b611e629
         }
         /*Seek(target);
 
