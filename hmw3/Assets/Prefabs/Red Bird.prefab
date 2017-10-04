@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 4739188776793864}
   - component: {fileID: 212465913299996194}
   - component: {fileID: 50982452314818296}
-  - component: {fileID: 114649562674547194}
   m_Layer: 0
   m_Name: Red Bird
   m_TagString: Untagged
@@ -62,17 +61,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &114649562674547194
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1628124086446648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e434f4f10e73cf43a8f4f675a5cb02e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &212465913299996194
 SpriteRenderer:
   m_ObjectHideFlags: 1

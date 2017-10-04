@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4849278768697574}
   - component: {fileID: 212340157812815048}
   m_Layer: 0
-  m_Name: Spot
+  m_Name: Red_Spot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

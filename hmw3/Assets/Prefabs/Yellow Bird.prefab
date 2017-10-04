@@ -75,13 +75,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circle: {fileID: 1136017871556942, guid: 619d808bc0b8e184ab653deb0ae78783, type: 2}
   spot: {fileID: 1076445233981752, guid: 594cd75cda92a5b46b8cb0ed9ab6350f, type: 2}
-  speed: 1
+  max_acceleration: 0
+  curr_circle: {fileID: 0}
+  curr_spot: {fileID: 0}
+  curr_chase_target: {fileID: 0}
   circle_diam: 1
+  update: 0
   update_rate: 5
   circle_dist: 5
+  target: {x: 0, y: 0}
   angle_slow: 30
   rot_speed: 1
+  yellow_birds: {fileID: 0}
   flock: []
+  k: 0
 --- !u!212 &212140711150504474
 SpriteRenderer:
   m_ObjectHideFlags: 1
