@@ -9,6 +9,7 @@ public class RedBird : MonoBehaviour
     public float rot_speed;
     public float angle_slow;
     public Vector3 test;
+    bool isFlipped = false;
     // Use this for initialization
     void Start()
     {
@@ -18,17 +19,54 @@ public class RedBird : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (transform.rotation.z >= .5 || transform.rotation.z <= -.5)
+        
+        if (transform.rotation.z >= .70 || transform.rotation.z <= -.70)
+        {
             gameObject.GetComponent<SpriteRenderer>().flipY = true;
-        else
+            isFlipped = true;
+        }
+        else{
             gameObject.GetComponent<SpriteRenderer>().flipY = false;
+            isFlipped = false;
+        }
         Vector2 direction = (Vector2)nextPos - (Vector2)transform.position;
         float target_angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         Align(Quaternion.AngleAxis(target_angle, Vector3.forward));
 
         checkCollision();
-    }
 
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+        foreach (GameObject go in allObjects)
+        {
+            if (go.tag == "YellowBird")
+            {
+                float angle = 30f;
+                float checkDegree = isInsideDegree(go, 30f);
+                if (checkDegree != -1)
+                {
+                    Vector2 goPos = go.transform.position;
+                    print("DODGE " + go.name + "!");
+                    //print("By: " + checkDegree+" degrees");
+                    float dist = Vector2.Distance(goPos, transform.position);
+                    print("Our angle is: " + Vector2.Angle(goPos, transform.up))
+
+
+                }
+            }
+        }
+    }
+    public float isInsideDegree(GameObject target, float n)
+    {
+        Vector2 dir = target.transform.position - transform.position;
+        float angle = Vector2.Angle(dir, transform.right);
+        //print("checking " + target.name + "!");
+      //  print("angle " + angle);
+        if (angle < n)
+        {
+            return angle;
+        }
+        return -1f;
+    }
     public void checkCollision()
     {
         float angle = 30;
