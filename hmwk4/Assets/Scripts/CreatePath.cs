@@ -15,7 +15,7 @@ public class CreatePath : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        if (SceneManager.GetActiveScene().name.Equals("Main"))
+        /*if (SceneManager.GetActiveScene().name.Equals("Main"))
         {
             for (float i = 0; i <= 6 * Mathf.PI; i += Mathf.PI / 24)
             {
@@ -23,24 +23,6 @@ public class CreatePath : MonoBehaviour {
                 blue_path_points.Add(new Vector2(i * width - 10, height * Mathf.Sin(-i - Mathf.PI / 2)));
             }
         } 
-        else if(SceneManager.GetActiveScene().name.Equals("Pattern 2"))
-        {
-            for (float i = 0; i <= 2 * Mathf.PI; i += Mathf.PI / 96)
-            {
-                red_path_points.Add(new Vector2(width * Mathf.Sin(2 * i), height * 2 * Mathf.Sin(3 * i)));
-                blue_path_points.Add(new Vector2(width * 2 * Mathf.Sin(3 * i), height * Mathf.Sin(2 * i)));
-            }
-        }
-        else if (SceneManager.GetActiveScene().name.Equals("Pattern 3"))
-        {
-            int a = 0;
-            float b = .5f;
-            for (float i = 6 * Mathf.PI; i > 0 ; i -= Mathf.PI / 96)
-            {
-                red_path_points.Add(new Vector2(b*i*Mathf.Cos(i+a), b * i * Mathf.Sin(i+a)));
-                blue_path_points.Add(new Vector2(b * i * Mathf.Sin(i + a), b * i * Mathf.Cos(i + a)));
-            }
-        }
 
         foreach (Vector2 p in red_path_points)
         {
@@ -49,6 +31,6 @@ public class CreatePath : MonoBehaviour {
         foreach(Vector2 p in blue_path_points)
         {
             Instantiate(blue_point, p, new Quaternion(0, 0, 0, 0));
-        }
+        }*/
     }
 }

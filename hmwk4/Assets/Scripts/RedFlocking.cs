@@ -14,7 +14,7 @@ public class RedFlocking : MonoBehaviour {
     public float arrive_radius;
 
     public GameObject path;
-    List<Vector2> path_points;
+    List<Vector2> path_points= new List<Vector2>();
     int path_index;
     public int future_index;
 
@@ -29,7 +29,9 @@ public class RedFlocking : MonoBehaviour {
     void Start()
     {
         path_index = 0;
-        path_points = path.GetComponent<CreatePath>().blue_path_points;
+        foreach (Transform x in path.transform){
+            path_points.Add(x.position);
+        }        
         flock = GetComponentsInChildren<RedBird>();
     }
 
