@@ -13,8 +13,7 @@ public class playerMove : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        if (coll.gameObject.tag == "RedBird")
+        if (coll.gameObject.tag == "Bird")
             Destroy(coll.gameObject);
-
     }
 }
