@@ -5,6 +5,8 @@ using UnityEngine;
 public class RedBirdFormation : MonoBehaviour {
 
     GameObject[] flock;
+    Vector2[] locs;
+
     float char_rad;
     public GameObject leader;
     public float spread;
@@ -19,11 +21,22 @@ public class RedBirdFormation : MonoBehaviour {
     public int path_index;
     public float leader_speed = .01f;
     public int future_index = 10;
+    public float sight_line;
+    public LayerMask layerMask;
+    int dont_start;
+    bool stopped;
+    bool line_time;
+    bool time3;
 
     // Use this for initialization
     void Start () {
+        line_time = false;
+        dont_start = 0;
+        stopped = false;
+        time3 = false;
         flock = GameObject.FindGameObjectsWithTag("Bird");
         char_rad = flock[0].GetComponent<CircleCollider2D>().radius;
+        locs = new Vector2[flock.Length];
     }
 	
 	// Update is called once per frame
@@ -36,10 +49,23 @@ public class RedBirdFormation : MonoBehaviour {
 
             target_loc += (Vector2)leader.transform.position;
 
-            Seek(flock[i], target_loc);
-            Align(flock[i], GetSlotOrientation(target_loc));
-            CollisionPredict(flock[i]);
-            AvoidWalls(flock[i]);
+
+            //Align(flock[i], GetSlotOrientation(target_loc)); //align to slot
+
+
+            if (line_time)
+                GetInLine(flock[i], i);
+            else if (time3 && !RayCastAvoidWalls(flock[i]))
+                GetIn3(flock[i], i);
+            else
+            {
+                CollisionPredict(flock[i]);
+                if (!RayCastAvoidWalls(flock[i]))
+                    Seek(flock[i], target_loc);
+            }
+            
+
+            Align(flock[i], flock[i].GetComponent<Rigidbody2D>().velocity.normalized);
 
             //clip to max_speed
             if (flock[i].GetComponent<Rigidbody2D>().velocity.magnitude > max_speed)
@@ -52,11 +78,61 @@ public class RedBirdFormation : MonoBehaviour {
                 flock[i].GetComponent<SpriteRenderer>().flipY = true;
             else
                 flock[i].GetComponent<SpriteRenderer>().flipY = false;
-
-            PathFollow();
         }
-	}
 
+        if(dont_start > 200)
+            PathFollow();
+        else
+            dont_start++;
+    }
+
+    void GetInLine(GameObject bird, int index)
+    {
+        if(index == 0)
+        {
+            Seek(bird, leader.transform.position);
+        }
+        else
+        {
+            Seek(bird, (Vector2)flock[index - 1].transform.position - flock[index - 1].GetComponent<Rigidbody2D>().velocity.normalized * spread / 20);
+        }
+
+    }
+    void GetIn3(GameObject bird, int index)
+    {
+        if (index == 0)
+        {
+            locs[index] = leader.transform.position;
+            Seek(bird, leader.transform.position);
+        }
+        else if(index == 1)
+        {
+            Vector2 temp = flock[index - 1].GetComponent<Rigidbody2D>().velocity.normalized;
+            temp.x = flock[index - 1].GetComponent<Rigidbody2D>().velocity.normalized.y;
+            temp.y = -flock[index - 1].GetComponent<Rigidbody2D>().velocity.normalized.x;
+            Vector2 aPos = (Vector2)leader.transform.position - temp * spread / 4;
+
+            locs[index] = aPos;
+            Seek(bird, aPos);
+        }
+        else if (index == 2)
+        {
+            Vector2 temp = flock[index - 2].GetComponent<Rigidbody2D>().velocity.normalized;
+            temp.x = -flock[index - 2].GetComponent<Rigidbody2D>().velocity.normalized.y;
+            temp.y = flock[index - 2].GetComponent<Rigidbody2D>().velocity.normalized.x;
+            Vector2 aPos = (Vector2)leader.transform.position - temp * spread / 4;
+            
+            locs[index] = aPos;
+            Seek(bird, aPos);
+        }
+        else 
+        {
+            locs[index] = (Vector2)flock[index - 3].transform.position - flock[index - 3].GetComponent<Rigidbody2D>().velocity.normalized * spread / 10;
+            Seek(bird, (Vector2)flock[index - 3].transform.position - flock[index - 3].GetComponent<Rigidbody2D>().velocity.normalized * spread / 10);
+        }
+
+        Debug.DrawLine(leader.transform.position, locs[index]);
+    }
     void PathFollow()
     {
         float min_dist = Mathf.Infinity;
@@ -75,6 +151,34 @@ public class RedBirdFormation : MonoBehaviour {
         }
 
         path_index = min_point_index;
+        if (path_index == 35 && !stopped)
+        {
+            line_time = true;
+            stopped = true;
+            dont_start = -200;
+            leader_speed /= 2;
+            return;
+        }
+
+        if (path_index == 74 && stopped)
+        {
+            line_time = false;
+            stopped = false;
+            dont_start = -200;
+            leader_speed *= 2;
+            return;
+        }
+        if (path_index == 105 && !stopped)
+        {
+            print("here dady");
+            time3 = true;
+            stopped = true;
+            dont_start = -200;
+            leader_speed /= 2;
+            return;
+        }
+
+        print(path_index);
         if (path_index + future_index >= path_points.Count)
         {
             path_index = path_points.Count - future_index - 1;
@@ -84,13 +188,62 @@ public class RedBirdFormation : MonoBehaviour {
         leader.transform.position = Vector2.MoveTowards(leader.transform.position, target, leader_speed * Time.deltaTime);
     }
 
-    void AvoidWalls(GameObject bird)
+    bool RayCastAvoidWalls(GameObject bird)
     {
-        RaycastHit hit = new RaycastHit();
-        Ray ray = new Ray(bird.transform.position, bird.transform.TransformDirection(Vector3.forward));
+        Vector2 left_ray = (Vector2.right * Mathf.Cos(15 * Mathf.PI / 180) + Vector2.up * Mathf.Sin(15 * Mathf.PI / 180)).normalized;
+        Vector2 right_ray = (Vector2.right * Mathf.Cos(15 * Mathf.PI / 180) - Vector2.up * Mathf.Sin(15 * Mathf.PI / 180)).normalized;
+        RaycastHit2D left_hit = Physics2D.Raycast(bird.transform.position, bird.transform.TransformDirection(left_ray), sight_line, layerMask);
+        RaycastHit2D right_hit = Physics2D.Raycast(bird.transform.position, bird.transform.TransformDirection(right_ray), sight_line, layerMask);
+        Vector2 target;
+        if (left_hit.collider != null)
+        {
+            print("Left sees the wall");
+            target = left_hit.point + left_hit.normal * 5;
+            Seek(bird, target);
+            return true;
+        }
+        else if (right_hit.collider != null)
+        {
+            print("right sees the wall");
+            target = right_hit.point + right_hit.normal * 5;
+            Seek(bird, target);
+            return true;
+        }
 
-        // Physics.Raycast(ray, out hit, _fireDistance)
+        return false;
     }
+
+    /*public float isInsideDegree(RedBird bird, GameObject target, float n)
+    {
+        Vector2 dir = target.transform.position - bird.transform.position;
+        float angle = Vector2.Angle(dir, bird.transform.right);
+
+        if (angle < n)
+            return angle;
+
+        return -1f;
+    }
+
+    public void ConeCheck(RedBird bird)
+    {
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+        foreach (GameObject go in allObjects)
+        {
+            if (go.tag == "YellowBird")
+            {
+                float checkDegree = isInsideDegree(bird, go, cone_angle);
+                if (checkDegree != -1)
+                {
+                    Vector2 goPos = go.transform.position;
+                    float dist = Vector2.Distance(goPos, bird.transform.position);
+                    if (dist < dodge_dist)
+                    {
+                        Flee(bird, go.transform.position);
+                    }
+                }
+            }
+        }
+    }*/
 
     //Defensive Circle Formation
     Vector2 GetSlotLocation(int slot_num, int total_birds) {
@@ -117,7 +270,7 @@ public class RedBirdFormation : MonoBehaviour {
 
         float dist = accel.magnitude;
 
-        if (dist <= d_arrive_dist)
+        if (dist <= d_arrive_dist && dist > 0)
         {
             float target_speed = max_speed * (dist / d_arrive_dist);
                  
@@ -180,7 +333,7 @@ public class RedBirdFormation : MonoBehaviour {
             }
         }
 
-        if (Vector2.Distance(min_bird, min_go) < min_coll_dist)
+        if (min_dist < min_coll_dist)
         {
             Vector2 accel = min_bird - min_go;
             float strength = Mathf.Min(max_accel / accel.magnitude, max_accel);
