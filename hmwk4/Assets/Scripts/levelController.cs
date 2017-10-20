@@ -15,12 +15,17 @@ public class levelController : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SceneManager.LoadScene("Main");
-            print("1 pressed");
+            
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SceneManager.LoadScene("emergent");
+
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            SceneManager.LoadScene("Formation Test");
-            print("1 pressed");
+            SceneManager.LoadScene("Lvl2Main");
+            
         }
     }
 }
