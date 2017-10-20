@@ -27,5 +27,10 @@ public class levelController : MonoBehaviour {
             SceneManager.LoadScene("Lvl2Main");
             
         }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+
+        }
     }
 }

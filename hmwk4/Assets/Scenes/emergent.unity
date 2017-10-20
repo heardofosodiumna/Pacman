@@ -444,6 +444,22 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114031677181994906, guid: 9935473d362e53d4e89d3289965f0641,
+        type: 2}
+      propertyPath: m_Text
+      value: 'Esc = Quit
+
+        1 = Scalable Formation
+
+        2 = Emergent Formation
+
+        3 = Two Level Formation'
+      objectReference: {fileID: 0}
+    - target: {fileID: 224700676223341140, guid: 9935473d362e53d4e89d3289965f0641,
+        type: 2}
+      propertyPath: m_SizeDelta.y
+      value: 85.9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9935473d362e53d4e89d3289965f0641, type: 2}
   m_IsPrefabParent: 0
