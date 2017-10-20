@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RedBirdFormation : MonoBehaviour {
+public class RedBirdFormation2Level : MonoBehaviour
+{
 
     GameObject[] flock;
     Vector2[] locs;
@@ -15,42 +16,44 @@ public class RedBirdFormation : MonoBehaviour {
     public float min_coll_dist;
     public float d_arrive_dist = 1f;
     public float max_speed;
-    public float slow_radius = Mathf.PI/24;
-    public float max_rot_speed = Mathf.PI/2;
+    public float slow_radius = Mathf.PI / 24;
+    public float max_rot_speed = Mathf.PI / 2;
     public List<GameObject> path_points;
     public int path_index;
     public float leader_speed = .01f;
-    public float leader_accel;
     public int future_index = 10;
     public float sight_line;
     public LayerMask layerMask;
     public float ray_angle;
-    int dont_start;
+    public GameObject invisiBird;
     bool stopped;
+    int dont_start;
     bool line_time;
     bool time3;
-    float true_spread;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         line_time = false;
         dont_start = 0;
-        stopped = false;
         time3 = false;
-        true_spread = spread;
+        stopped = false;
         flock = GameObject.FindGameObjectsWithTag("Bird");
         char_rad = flock[0].GetComponent<CircleCollider2D>().radius;
         locs = new Vector2[flock.Length];
-        spread = leader.GetComponent<LeaderSpread>().spread;
-        leader.GetComponent<CircleCollider2D>().radius = spread * char_rad / Mathf.Sin(Mathf.PI / flock.Length) + .25f;
+        leader.GetComponent<CircleCollider2D>().radius = spread * char_rad / Mathf.Sin(Mathf.PI / flock.Length);
+        invisiBird = GameObject.FindGameObjectWithTag("Finish");
     }
-	
-	// Update is called once per frame
-	void FixedUpdate () {
-        flock = GameObject.FindGameObjectsWithTag("Bird");
-        spread = leader.GetComponent<LeaderSpread>().spread;
-        leader.GetComponent<CircleCollider2D>().radius = spread * char_rad / Mathf.Sin(Mathf.PI / flock.Length) + .25f;
 
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        flock = GameObject.FindGameObjectsWithTag("Bird");
+        leader.GetComponent<CircleCollider2D>().radius = spread * char_rad / Mathf.Sin(Mathf.PI / flock.Length);
+
+        Seek(invisiBird, leader.transform.position);
+        if (invisiBird.GetComponent<Rigidbody2D>().velocity.magnitude > .05f)
+            Align(invisiBird, invisiBird.GetComponent<Rigidbody2D>().velocity.normalized);
         //find slot loc
         for (int i = 0; i < flock.Length; i++)
         {
@@ -58,19 +61,18 @@ public class RedBirdFormation : MonoBehaviour {
 
             target_loc += (Vector2)leader.transform.position;
 
-            Debug.DrawLine(flock[i].transform.position, target_loc, Color.blue);
-
             if (line_time)
                 GetInLine(flock[i], i);
             else if (time3 && !RayCastAvoidWalls(flock[i]))
                 GetIn3(flock[i], i);
             else
             {
-                //CollisionPredict(flock[i]);
-                //if (!RayCastAvoidWalls(flock[i]))
-                Seek(flock[i], target_loc);
+                CollisionPredict(flock[i]);
+
+                if(!RayCastAvoidWalls(flock[i]))
+                    Seek(flock[i], target_loc);
             }
-            
+
 
             Align(flock[i], flock[i].GetComponent<Rigidbody2D>().velocity.normalized);
 
@@ -78,8 +80,8 @@ public class RedBirdFormation : MonoBehaviour {
             if (flock[i].GetComponent<Rigidbody2D>().velocity.magnitude > max_speed)
                 flock[i].GetComponent<Rigidbody2D>().velocity = flock[i].GetComponent<Rigidbody2D>().velocity.normalized * max_speed;
 
-            if(leader.GetComponent<Rigidbody2D>().velocity.magnitude > leader_speed)
-                leader.GetComponent<Rigidbody2D>().velocity = leader.GetComponent<Rigidbody2D>().velocity.normalized * leader_speed;
+            if (leader.GetComponent<Rigidbody2D>().velocity.magnitude > max_speed)
+                leader.GetComponent<Rigidbody2D>().velocity = leader.GetComponent<Rigidbody2D>().velocity.normalized * max_speed;
 
             //fix orientation
             if (flock[i].transform.rotation.z >= .5 || flock[i].transform.rotation.z <= -.5)
@@ -88,16 +90,10 @@ public class RedBirdFormation : MonoBehaviour {
                 flock[i].GetComponent<SpriteRenderer>().flipY = false;
         }
 
-        if(leader.GetComponent<Rigidbody2D>().velocity.magnitude > .05f)
-            Align(leader, leader.GetComponent<Rigidbody2D>().velocity.normalized);
-
-        if (!RayCastAvoidWalls(leader))
-        {
-            if (dont_start > 200)
-                PathFollow();
-            else
-                dont_start++;
-        }
+        if (dont_start > 200)
+            PathFollow();
+        else
+            dont_start++;
     }
 
     void GetInLine(GameObject bird, int index)
@@ -115,7 +111,7 @@ public class RedBirdFormation : MonoBehaviour {
             locs[index] = leader.transform.position;
             Seek(bird, leader.transform.position);
         }
-        else if(index == 1)
+        else if (index == 1)
         {
             Vector2 temp = flock[index - 1].GetComponent<Rigidbody2D>().velocity.normalized;
             temp.x = flock[index - 1].GetComponent<Rigidbody2D>().velocity.normalized.y;
@@ -131,11 +127,11 @@ public class RedBirdFormation : MonoBehaviour {
             temp.x = -flock[index - 2].GetComponent<Rigidbody2D>().velocity.normalized.y;
             temp.y = flock[index - 2].GetComponent<Rigidbody2D>().velocity.normalized.x;
             Vector2 aPos = (Vector2)leader.transform.position - temp * spread / 4;
-            
+
             locs[index] = aPos;
             Seek(bird, aPos);
         }
-        else 
+        else
         {
             locs[index] = (Vector2)flock[index - 3].transform.position - flock[index - 3].GetComponent<Rigidbody2D>().velocity.normalized * spread / 10;
             Seek(bird, (Vector2)flock[index - 3].transform.position - flock[index - 3].GetComponent<Rigidbody2D>().velocity.normalized * spread / 10);
@@ -145,7 +141,7 @@ public class RedBirdFormation : MonoBehaviour {
     }
 
     void PathFollow()
-    { 
+    {
         float min_dist = Mathf.Infinity;
         int min_point_index = path_index;
         for (int i = 0; i < path_points.Count; i++)
@@ -162,14 +158,14 @@ public class RedBirdFormation : MonoBehaviour {
         }
 
         path_index = min_point_index;
-        /*if (path_index == 43 && !stopped)
+        if (path_index == 30 && !stopped)
         {
             line_time = true;
             stopped = true;
             dont_start = 0;
             max_accel *= 2;
             max_speed *= 2;
-            //leader_speed /= 2;
+            leader_speed /= 2;
             return;
         }
 
@@ -177,10 +173,10 @@ public class RedBirdFormation : MonoBehaviour {
         {
             line_time = false;
             stopped = false;
-            dont_start = -200;
+            dont_start = -50;
             max_accel /= 2;
             max_speed /= 2;
-            //leader_speed *= 2;
+            leader_speed *= 2;
             return;
         }
         if (path_index == 105 && !stopped)
@@ -188,9 +184,9 @@ public class RedBirdFormation : MonoBehaviour {
             time3 = true;
             stopped = true;
             dont_start = -100;
-            //leader_speed /= 2;
+            leader_speed /= 2;
             return;
-        }*/
+        }
 
         if (path_index + future_index >= path_points.Count)
         {
@@ -198,71 +194,34 @@ public class RedBirdFormation : MonoBehaviour {
         }
         Vector2 target = path_points[path_index + future_index].transform.position;
 
-        Vector2 accel = target - (Vector2)leader.transform.position;
-        float power = accel.magnitude;
-        accel = (accel - leader.GetComponent<Rigidbody2D>().velocity).normalized * power;
-        float strength = Mathf.Min(accel.magnitude, leader_accel);
-        Vector2 thrust = accel.normalized * strength;
+        float adjust = 1;
+        /*if ((flock[0].transform.position - leader.transform.position).magnitude > 3)
+            adjust = .5f;*/
 
-        float dist = accel.magnitude;
-
-        leader.GetComponent<Rigidbody2D>().AddForce(thrust);
+        leader.transform.position = Vector2.MoveTowards(leader.transform.position, target, leader_speed * adjust * Time.deltaTime);
     }
 
     bool RayCastAvoidWalls(GameObject bird)
     {
-        bool collided = false;
         Vector2 left_ray = (Vector2.right * Mathf.Cos(ray_angle / 2 * Mathf.PI / 180) + Vector2.up * Mathf.Sin(ray_angle / 2 * Mathf.PI / 180)).normalized;
-        Vector2 center_ray = Vector2.right;
         Vector2 right_ray = (Vector2.right * Mathf.Cos(ray_angle / 2 * Mathf.PI / 180) - Vector2.up * Mathf.Sin(ray_angle / 2 * Mathf.PI / 180)).normalized;
         RaycastHit2D left_hit = Physics2D.Raycast(bird.transform.position, bird.transform.TransformDirection(left_ray), sight_line, layerMask);
-        RaycastHit2D center_hit = Physics2D.Raycast(bird.transform.position, bird.transform.TransformDirection(center_ray), sight_line, layerMask);
         RaycastHit2D right_hit = Physics2D.Raycast(bird.transform.position, bird.transform.TransformDirection(right_ray), sight_line, layerMask);
-        Vector2 target = new Vector2(0, 0);
-
-        if (center_hit.collider != null)
+        Vector2 target;
+        if (left_hit.collider != null)
         {
-            Debug.DrawLine(leader.transform.position, center_hit.point);
-            target = (Vector2)bird.transform.position - center_hit.point;
-            target = (Vector2)bird.transform.position + target.normalized * 3;
-            collided = true;
-        }
-        else if (left_hit.collider != null && right_hit.collider != null)
-        {
-            Debug.DrawLine(leader.transform.position, left_hit.point, Color.red);
-            Debug.DrawLine(leader.transform.position, right_hit.point, Color.red);
-            collided = false;
-        }
-        else if (left_hit.collider != null)
-        {
-            Debug.DrawLine(leader.transform.position, left_hit.point, Color.red);
             target = left_hit.point + left_hit.normal * 5;
-            collided = true;
+            Seek(bird, target);
+            return true;
         }
         else if (right_hit.collider != null)
         {
-            Debug.DrawLine(leader.transform.position, right_hit.point, Color.red);
             target = right_hit.point + right_hit.normal * 5;
-            collided = true;
-        }
-        else
-            collided = false;
-
-        if(collided)
-        {
-            Vector2 accel = target - (Vector2)bird.transform.position;
-            float power = accel.magnitude;
-            accel = (accel - bird.GetComponent<Rigidbody2D>().velocity).normalized * power;
-            float strength = Mathf.Min(accel.magnitude, max_accel);
-            Vector2 thrust = accel.normalized * strength;
-
-            float dist = accel.magnitude;
-
-            bird.GetComponent<Rigidbody2D>().AddForce(thrust);
+            Seek(bird, target);
+            return true;
         }
 
-        return collided;
-        
+        return false;
     }
 
     /*public float isInsideDegree(RedBird bird, GameObject target, float n)
@@ -298,16 +257,66 @@ public class RedBirdFormation : MonoBehaviour {
     }*/
 
     //Defensive Circle Formation
-    Vector2 GetSlotLocation(int slot_num, int total_birds) {
+    Vector2 GetSlotLocation(int slot_num, int total_birds)
+    {
 
-        float angle = (float)slot_num / (float)total_birds * Mathf.PI * 2;
-        float rad = spread * char_rad / Mathf.Sin(Mathf.PI / total_birds);
+        Vector2 aPos = new Vector2(0, 0);
+        Vector2 origin = invisiBird.transform.position;
+        if (slot_num == 0)
+        {
+            aPos = new Vector2(0, 0);
+            locs[slot_num] = aPos;
+        }
+        else if (slot_num < total_birds / 2)
+        {
+            if (slot_num % 2 == 0)
+            {
+                Vector2 temp = invisiBird.transform.right;
+                temp.x = invisiBird.transform.right.y;
+                temp.y = -invisiBird.transform.right.x;
+                aPos = -temp * spread * (slot_num / 2);
+                locs[slot_num] = aPos;
+            }
+            else if (slot_num % 2 == 1)
+            {
+                Vector2 temp = invisiBird.transform.right;
+                temp.x = -invisiBird.transform.right.y;
+                temp.y = invisiBird.transform.right.x;
+                aPos = -temp * spread * ((slot_num + 1) / 2);
+                locs[slot_num] = aPos;
+            }
+        }
+        else
+        {
+            int sign = slot_num - total_birds / 2;
+            if (slot_num % 2 == 0)
+            {
+                Vector2 temp = invisiBird.transform.right;
+                temp.x = invisiBird.transform.right.y;
+                temp.y = -invisiBird.transform.right.x;
+                aPos = -temp * spread * (sign / 2);
+                locs[sign] = aPos;
+            }
+            else if (slot_num % 2 == 1)
+            {
+                Vector2 temp = invisiBird.transform.right;
+                temp.x = -invisiBird.transform.right.y;
+                temp.y = invisiBird.transform.right.x;
+                aPos = -temp * spread * ((sign + 1) / 2);
+                locs[sign] = aPos;
+            }
+        }
 
-        Vector2 slot_loc = new Vector2(rad * Mathf.Cos(angle), rad * Mathf.Sin(angle));
-        return slot_loc;
+        if (slot_num < total_birds / 2)
+            return aPos;
+        else
+        {
+            return aPos - (Vector2)invisiBird.transform.right * 2;
+        }
     }
 
-    Vector2 GetSlotOrientation(Vector2 target_location) {
+    Vector2 GetSlotOrientation(Vector2 target_location)
+    {
         Vector2 direction = target_location - (Vector2)leader.transform.position;
         return direction.normalized;
     }
@@ -316,7 +325,7 @@ public class RedBirdFormation : MonoBehaviour {
     {
         Vector2 accel = target - (Vector2)bird.transform.position;
         float power = accel.magnitude;
-        accel = (accel - bird.GetComponent<Rigidbody2D>().velocity).normalized*power;   
+        accel = (accel - bird.GetComponent<Rigidbody2D>().velocity).normalized * power;
         float strength = Mathf.Min(accel.magnitude, max_accel);
         Vector2 thrust = accel.normalized * strength;
 
@@ -325,7 +334,7 @@ public class RedBirdFormation : MonoBehaviour {
         if (dist <= d_arrive_dist && dist > 0)
         {
             float target_speed = max_speed * (dist / d_arrive_dist);
-                 
+
             Vector2 direction = (target - (Vector2)bird.transform.position).normalized;
             Vector2 target_velocity = target_speed * direction;
             thrust = target_velocity - (Vector2)bird.GetComponent<Rigidbody2D>().velocity;
@@ -365,7 +374,7 @@ public class RedBirdFormation : MonoBehaviour {
 
                 if (dp.magnitude > adjusted_sight_distance)
                     continue;
-                
+
                 Vector2 dv = o_bird.GetComponent<Rigidbody2D>().velocity - bird.GetComponent<Rigidbody2D>().velocity;
 
                 float t_2_closest = -1 * (Vector2.Dot(dp, dv) / (dv.magnitude * dv.magnitude));
@@ -389,7 +398,7 @@ public class RedBirdFormation : MonoBehaviour {
         {
             Vector2 accel = min_bird - min_go;
             float strength = Mathf.Min(max_accel / accel.magnitude, max_accel);
-            bird.GetComponent<Rigidbody2D>().AddForce(accel.normalized * strength * .5f);
+            bird.GetComponent<Rigidbody2D>().AddForce(accel.normalized * strength * .6f);
         }
     }
 }
