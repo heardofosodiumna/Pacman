@@ -2079,7 +2079,7 @@ GameObject:
   - component: {fileID: 250511665}
   - component: {fileID: 250511666}
   - component: {fileID: 250511667}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (18)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -3404,7 +3404,7 @@ GameObject:
   - component: {fileID: 369756351}
   - component: {fileID: 369756352}
   - component: {fileID: 369756353}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (15)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -6042,7 +6042,7 @@ GameObject:
   - component: {fileID: 718184377}
   - component: {fileID: 718184378}
   - component: {fileID: 718184379}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (12)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -8573,7 +8573,7 @@ GameObject:
   - component: {fileID: 1071729134}
   - component: {fileID: 1071729135}
   - component: {fileID: 1071729136}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (10)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -9891,7 +9891,7 @@ GameObject:
   - component: {fileID: 1275404916}
   - component: {fileID: 1275404917}
   - component: {fileID: 1275404918}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (16)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -10529,7 +10529,7 @@ GameObject:
   - component: {fileID: 1335726729}
   - component: {fileID: 1335726730}
   - component: {fileID: 1335726731}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (17)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -10626,7 +10626,7 @@ GameObject:
   - component: {fileID: 1337801351}
   - component: {fileID: 1337801352}
   - component: {fileID: 1337801353}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (13)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -13562,7 +13562,7 @@ GameObject:
   - component: {fileID: 1821895759}
   - component: {fileID: 1821895760}
   - component: {fileID: 1821895761}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (14)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -13659,7 +13659,7 @@ GameObject:
   - component: {fileID: 1824992680}
   - component: {fileID: 1824992681}
   - component: {fileID: 1824992682}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (11)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -15396,7 +15396,7 @@ GameObject:
   - component: {fileID: 2133110332}
   - component: {fileID: 2133110333}
   - component: {fileID: 2133110334}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: medRect (19)
   m_TagString: Wall
   m_Icon: {fileID: 0}
