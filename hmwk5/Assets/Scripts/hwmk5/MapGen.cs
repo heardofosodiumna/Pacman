@@ -3,22 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-public class MapGen : MonoBehaviour {
+public class MapGen : MonoBehaviour
+{
 
     public GameObject tree;
     public GameObject openSpace;
     public GameObject wall;
-        
 
+    Ray ray;
+    RaycastHit hit;
     public ArrayList map = new ArrayList();
 
 
 
     // Use this for initialization
-    void Start () {
-        
-        string file_path = "map.txt";
-        StreamReader input= new StreamReader(file_path);
+    void Start()
+    {
+
+        string file_path = "testmap.txt";
+        StreamReader input = new StreamReader(file_path);
 
         while (!input.EndOfStream)
         {
@@ -31,12 +34,12 @@ public class MapGen : MonoBehaviour {
         for (int i = 0; i < map.Count; i++)
         {
             char[] line = (char[])map[i];
-            for(int j = 0; j < line.Length; j++)
+            for (int j = 0; j < line.Length; j++)
             {
                 char tile = line[j];
                 Vector3 loc = new Vector3(j, -1 * i, 0);
                 Quaternion no_rotate = new Quaternion(0, 0, 0, 0);
-                switch(tile)
+                switch (tile)
                 {
                     case '@':
                         Instantiate(wall, loc, no_rotate);

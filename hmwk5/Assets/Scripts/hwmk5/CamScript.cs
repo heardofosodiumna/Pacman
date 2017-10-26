@@ -36,7 +36,6 @@ public class CamScript : MonoBehaviour {
             active = true;
         if (active)
         {
-            Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
 
             /*
              *--------------------------- 
@@ -51,33 +50,29 @@ public class CamScript : MonoBehaviour {
              */
             Vector3 move;
             
-            if ((pos.x > -1 && pos.x < .2)|| Input.GetKey("a"))
+            if (Input.GetKey("a"))
             {
-                print("left");
                 move = new Vector3(-.3f, 0, 0);
                 if(mainCam.transform.position.x > 0)
                     mainCam.transform.Translate(move, Space.World);
                 move = Vector3.zero;
             }
-            if ((pos.x > .8 && pos.x < 1.1)||Input.GetKey("d"))
+            if (Input.GetKey("d"))
             {
-                print("right");
                 move = new Vector3(.3f, 0, 0);
                 if (mainCam.transform.position.x < 250)
                     mainCam.transform.Translate(move, Space.World);
                 move = Vector3.zero;
             }
-            if ((pos.y > -1 && pos.y < .2)|| Input.GetKey("s"))
+            if (Input.GetKey("s"))
             {
-                print("down");
                 move= new Vector3(0, -.3f, 0);
                 if(mainCam.transform.position.y > -230)
                     mainCam.transform.Translate(move, Space.World);
                 move = Vector3.zero;
             }
-            if ((pos.y > .8 && pos.y < 1.1)|| Input.GetKey("w"))
+            if (Input.GetKey("w"))
             {
-                print("up");
                 move = new Vector3(0, .3f, 0);
                 if(mainCam.transform.position.y < 0)
                     mainCam.transform.Translate(move, Space.World);
