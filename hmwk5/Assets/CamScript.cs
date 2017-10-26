@@ -18,14 +18,14 @@ public class CamScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f|| Input.GetKeyDown("q")) // forward
         {
              Vector3 temp = mainCam.transform.position;
             if(temp.z<-20)
                 temp.z+=2;
             mainCam.transform.position = temp;
         }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0f|| Input.GetKeyDown("e")) // backwards
         {
             Vector3 temp = mainCam.transform.position;
             if (temp.z > -184)
@@ -50,32 +50,37 @@ public class CamScript : MonoBehaviour {
              * 
              */
             Vector3 move;
-            if ((pos.x > -1 && pos.x < .2))
+            
+            if ((pos.x > -1 && pos.x < .2)|| Input.GetKey("a"))
             {
                 print("left");
                 move = new Vector3(-.3f, 0, 0);
-                mainCam.transform.Translate(move, Space.World);
+                if(mainCam.transform.position.x > 0)
+                    mainCam.transform.Translate(move, Space.World);
                 move = Vector3.zero;
             }
-            if ((pos.x > .8 && pos.x < 1.1))
+            if ((pos.x > .8 && pos.x < 1.1)||Input.GetKey("d"))
             {
                 print("right");
                 move = new Vector3(.3f, 0, 0);
-                mainCam.transform.Translate(move, Space.World);
+                if (mainCam.transform.position.x < 250)
+                    mainCam.transform.Translate(move, Space.World);
                 move = Vector3.zero;
             }
-            if ((pos.y > -1 && pos.y < .2))
+            if ((pos.y > -1 && pos.y < .2)|| Input.GetKey("s"))
             {
                 print("down");
                 move= new Vector3(0, -.3f, 0);
-                mainCam.transform.Translate(move, Space.World);
+                if(mainCam.transform.position.y > -230)
+                    mainCam.transform.Translate(move, Space.World);
                 move = Vector3.zero;
             }
-            if ((pos.y > .8 && pos.y < 1.1))
+            if ((pos.y > .8 && pos.y < 1.1)|| Input.GetKey("w"))
             {
                 print("up");
                 move = new Vector3(0, .3f, 0);
-                mainCam.transform.Translate(move, Space.World);
+                if(mainCam.transform.position.y < 0)
+                    mainCam.transform.Translate(move, Space.World);
                 move = Vector3.zero;
             }
             /*if (mainCam.transform.position.x > 0 && moveX.x < 0 || moveX.x > 0 && mainCam.transform.position.x < 250)
