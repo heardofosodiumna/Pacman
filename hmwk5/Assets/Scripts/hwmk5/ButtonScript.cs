@@ -8,17 +8,10 @@ public class ButtonScript : MonoBehaviour {
     {
         Time.timeScale = 0f;
     }
-
-    public void Restart()
-    {
-        livesMan.restartLives();
-        //ScoreManager.restartScore();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        
-
-    }
+    
     public void StartGame()
     {
         Time.timeScale = 1f;
+        Destroy(this.gameObject);
     }
 }

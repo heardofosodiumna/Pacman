@@ -9,17 +9,14 @@ public class MapGen : MonoBehaviour
     public GameObject tree;
     public GameObject openSpace;
     public GameObject wall;
-
     Ray ray;
     RaycastHit hit;
     public ArrayList map = new ArrayList();
 
 
-
     // Use this for initialization
     void Start()
     {
-
         string file_path = "testmap.txt";
         StreamReader input = new StreamReader(file_path);
 
@@ -54,6 +51,7 @@ public class MapGen : MonoBehaviour
                 }
             }
         }
-
     }
+
+   
 }
