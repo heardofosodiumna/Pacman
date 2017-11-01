@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 8a4f689262ca39d49ac68c9f57e4449e
+timeCreated: 1509036958
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - start: {fileID: 1526327465916260, guid: d8af25dbd7fb90e468c4a8722fbb5107, type: 2}
+  - End: {fileID: 1920689832591444, guid: d77b6e18c96e3174caad51a3def886a7, type: 2}
+  - Wall: {fileID: 1312025905744634, guid: f1a30ca70d0998a45a9cd3ba54712fb7, type: 2}
+  - Tree: {fileID: 1745673708867514, guid: 3beb0cde9d6189941b15f51b26cfe958, type: 2}
+  - Tile: {fileID: 1940029420231808, guid: 07e08bd216e807e40a509f18d5f0e885, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
