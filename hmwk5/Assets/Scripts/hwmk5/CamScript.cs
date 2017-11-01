@@ -16,19 +16,19 @@ public class CamScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f|| Input.GetKeyDown("q")) // forward
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f || Input.GetKeyDown("q")) // forward
         {
-             Vector3 temp = mainCam.transform.position;
-            if(temp.z<-20)
-                temp.z+=2;
-            mainCam.transform.position = temp;
+            float temp = mainCam.orthographicSize;
+            if(temp > 3)
+                temp -= 3;
+            mainCam.orthographicSize = temp;
         }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f|| Input.GetKeyDown("e")) // backwards
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0f || Input.GetKeyDown("e")) // backwards
         {
-            Vector3 temp = mainCam.transform.position;
-            if (temp.z > -184)
-                temp.z-=2;
-            mainCam.transform.position = temp;
+            float temp = mainCam.orthographicSize;
+            if (temp < 160)
+                temp += 3;
+            mainCam.orthographicSize = temp;
         }
 
         /*
@@ -46,41 +46,29 @@ public class CamScript : MonoBehaviour {
             
         if (Input.GetKey("a"))
         {
-            move = new Vector3(-.3f, 0, 0);
-            if(mainCam.transform.position.x > 0)
-                mainCam.transform.Translate(move, Space.World);
+            move = new Vector3(-1f, 0, 0);
+            mainCam.transform.Translate(move, Space.World);
             move = Vector3.zero;
         }
         if (Input.GetKey("d"))
         {
-            move = new Vector3(.3f, 0, 0);
-            if (mainCam.transform.position.x < 250)
-                mainCam.transform.Translate(move, Space.World);
+            move = new Vector3(1f, 0, 0);
+            mainCam.transform.Translate(move, Space.World);
             move = Vector3.zero;
         }
         if (Input.GetKey("s"))
         {
-            move= new Vector3(0, -.3f, 0);
-            if(mainCam.transform.position.y > -230)
-                mainCam.transform.Translate(move, Space.World);
+            move= new Vector3(0, -1f, 0);
+            mainCam.transform.Translate(move, Space.World);
             move = Vector3.zero;
         }
         if (Input.GetKey("w"))
         {
-            move = new Vector3(0, .3f, 0);
-            if(mainCam.transform.position.y < 0)
-                mainCam.transform.Translate(move, Space.World);
+            move = new Vector3(0, 1f, 0);
+            mainCam.transform.Translate(move, Space.World);
             move = Vector3.zero;
         }
-        /*if (mainCam.transform.position.x > 0 && moveX.x < 0 || moveX.x > 0 && mainCam.transform.position.x < 250)
-            if ((moveX.x > -1 && moveX.x < .2) || (moveX.x > .7 && moveX.x < 1.1))
-            {
-                mainCam.transform.Translate(moveX, Space.World);
-                moveX = Vector3.zero;
-            }*/
-        //  if (mainCam.transform.position.y >-230&& moveY.y<0 || moveY.y>0 && mainCam.transform.position.y < 0)
-        //   mainCam.transform.Translate(moveY, Space.World);
         
     }
 
-   }
+}

@@ -16,13 +16,14 @@ public class moustOver : MonoBehaviour {
 
     Quaternion no_rotate;
 
+
     void Start()
     {
         hover= false;
         no_rotate = new Quaternion(0, 0, 0, 0);
         startButton = GameObject.Find("Set Start");
         endButton = GameObject.Find("Set End");
-        treeButton = GameObject.Find("Set Tree"); ;
+        treeButton = GameObject.Find("Set Tree");
     }
     void FixedUpdate()
     {

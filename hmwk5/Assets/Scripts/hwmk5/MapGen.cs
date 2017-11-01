@@ -20,7 +20,7 @@ public class MapGen : MonoBehaviour
     int size_x;
     int size_y;
 
-    float tileSize = 1.0f;
+    public float tileSize = 1.0f;
     public Texture2D terrainTiles;
     public int tileResolution;
 
@@ -146,6 +146,7 @@ public class MapGen : MonoBehaviour
         MeshCollider mesh_collider = GetComponent<MeshCollider>();
 
         mesh_filter.mesh = mesh;
+        mesh_collider.sharedMesh = mesh;
     }
 
 }
