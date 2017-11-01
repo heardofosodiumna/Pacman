@@ -28,8 +28,6 @@ public class moustOver : MonoBehaviour {
     {
         if (hover)
         {
-            print(this.gameObject);
-
             if (Input.GetMouseButtonDown(0) && this.tag == "openSpace" && startButton.GetComponent<startBut>().GetStart())
             {
                 GameObject old = GameObject.FindGameObjectWithTag("start");
@@ -42,7 +40,6 @@ public class moustOver : MonoBehaviour {
                 }
                 //destroy the current tile
                 Vector3 pos = this.transform.position;
-                print(pos);
                 Destroy(this.gameObject);
                 Instantiate(start, pos, no_rotate);
 
@@ -60,7 +57,6 @@ public class moustOver : MonoBehaviour {
                 }
                 //destroy the current tile
                 Vector3 pos = this.transform.position;
-                print(pos);
                 Destroy(this.gameObject);
                 Instantiate(End, pos, no_rotate);
 
@@ -72,7 +68,6 @@ public class moustOver : MonoBehaviour {
                 
                 //destroy the current tile
                 Vector3 pos = this.transform.position;
-                print(pos);
                 Destroy(this.gameObject);
                 Instantiate(Tree, pos, no_rotate);
             }
