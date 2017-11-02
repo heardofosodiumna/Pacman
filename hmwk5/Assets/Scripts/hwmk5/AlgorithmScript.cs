@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class AlgorithmScript : MonoBehaviour {
 
-    GameObject start;
-    GameObject end;
-    Vector3 startPos;
-    Vector3 endPos;
+    public GameObject start;
+    public GameObject end;
+    public Vector3 startPos;
+    public Vector3 endPos;
 
     // Use this for initialization
     void Start() {
@@ -36,7 +36,7 @@ public class AlgorithmScript : MonoBehaviour {
 
         if(start && end)
         {
-            //destroyPathToEnd();
+            destroyPathToEnd();
         }
 
 
@@ -107,6 +107,8 @@ public class AlgorithmScript : MonoBehaviour {
     GameObject FindAt(Vector3 pos) {
         // get all colliders that intersect pos:
         Collider2D col = Physics2D.OverlapBox(pos, new Vector2(.5f, .5f), 0);
+        //  `Collider[] coli = Physics.OverlapBox(pos, new Vector3(.5f, .5f, .5f));
+        print(col);
         return col.gameObject;
      }
     void findAndGetStart()
@@ -126,4 +128,9 @@ public class AlgorithmScript : MonoBehaviour {
         }
     }
 
-}
+    void FindPath(Vector3 startPos, Vector3 endtPos)
+    {
+
+    }
+
+ }

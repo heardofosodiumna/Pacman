@@ -5,7 +5,7 @@ using System.IO;
 
 public class MapGen : MonoBehaviour
 {
-
+    public Gridd grid;
     public GameObject tree;
     public GameObject openSpace;
     public GameObject wall;
@@ -17,7 +17,7 @@ public class MapGen : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        string file_path = "testmap.txt";
+        string file_path = "map.txt";
         StreamReader input = new StreamReader(file_path);
 
         while (!input.EndOfStream)
@@ -51,6 +51,7 @@ public class MapGen : MonoBehaviour
                 }
             }
         }
+        grid.CreateGrid();
     }
 
    
