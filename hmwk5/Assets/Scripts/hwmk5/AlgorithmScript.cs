@@ -36,8 +36,10 @@ public class AlgorithmScript : MonoBehaviour {
 
         if(start && end)
         {
-            destroyPathToEnd();
+            //destroyPathToEnd();
         }
+
+
     }
     void destroyPathToEnd()
     {
@@ -66,6 +68,7 @@ public class AlgorithmScript : MonoBehaviour {
     {
         if (aGameObject == null)
         {
+            print("You gave me a null object. JERK!");
             return null;
         }
         Vector3 loc = aGameObject.transform.position + new Vector3(0, -1, 0);
@@ -75,6 +78,7 @@ public class AlgorithmScript : MonoBehaviour {
     {
         if (aGameObject == null)
         {
+            print("You gave me a null object. JERK!");
             return null;
         }
         Vector3 loc = aGameObject.transform.position + new Vector3(0, 1, 0);
@@ -84,6 +88,7 @@ public class AlgorithmScript : MonoBehaviour {
     {
         if (aGameObject == null)
         {
+            print("You gave me a null object. JERK!");
             return null;
         }
         Vector3 loc = aGameObject.transform.position + new Vector3(1, 0, 0);
@@ -93,6 +98,7 @@ public class AlgorithmScript : MonoBehaviour {
     {
         if (aGameObject == null)
         {
+            print("You gave me a null object. JERK!");
             return null;
         }
         Vector3 loc = aGameObject.transform.position + new Vector3(-1, 0, 0);

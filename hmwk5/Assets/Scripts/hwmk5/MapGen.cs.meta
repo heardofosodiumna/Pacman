@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 1d01fbec9b5247249b50a35c15754d9c
-timeCreated: 1509550667
+timeCreated: 1509036974
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
@@ -9,8 +9,6 @@ MonoImporter:
   - openSpace: {fileID: 1940029420231808, guid: 07e08bd216e807e40a509f18d5f0e885,
       type: 2}
   - wall: {fileID: 1312025905744634, guid: f1a30ca70d0998a45a9cd3ba54712fb7, type: 2}
-  - center_dot: {fileID: 1575710281270732, guid: f067b3c90319c9c439f4d883b1441262,
-      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
