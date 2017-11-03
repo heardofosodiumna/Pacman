@@ -10,6 +10,7 @@ public class AlgorithmScript : MonoBehaviour {
     Vector3 endPos;
     bool go = true;
     List<Node> final;
+    int Max = 12;
     // Use this for initialization
     void Start() {
 
@@ -129,16 +130,28 @@ public class AlgorithmScript : MonoBehaviour {
                         //Assign the parent node
                         neighbour.parentNode = currentNode;
                         //And add the neighbour node to the open set
-                        if (!openSet.Contains(neighbour))
+
+                        List<string> textList = new List<string>();
+                        foreach(Node a in openSet)
                         {
-                              //  print(neighbour.pos);
-                                
-                                openSet.Add(neighbour);
+                            textList.Add((a.pos).ToString());
                         }
+                        if (!textList.Contains((neighbour.pos).ToString()))
+                        {
+                            openSet.Add(neighbour);
+                        }
+                        //--------------
+                       /* if (!openSet.Contains(neighbour))
+                        {
+                            //  print(neighbour.pos);
+                            if (Max > 0)
+                            {
+                                Max--;
+                            }
+                        }*/
                     }
                 }
             }
-            closedSet.Add(currentNode);
         }
         
         //we return the path at the end
