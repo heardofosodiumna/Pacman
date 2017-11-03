@@ -6,14 +6,20 @@ public class AlgorithmScript : MonoBehaviour {
 
     GameObject start;
     GameObject end;
+    public GameObject changed;
+    public Sprite aSprite;
     Vector3 startPos;
     Vector3 endPos;
     bool go = true;
+    bool done = false;
     List<Node> final;
+    List<Node> toChange;
+    List<Node> alreadySearched;
     int Max = 12;
     // Use this for initialization
     void Start() {
-
+        toChange = new List<Node>();
+        alreadySearched = new List<Node>();
         findAndGetStart();
         findAndGetEnd();
     }
@@ -42,14 +48,38 @@ public class AlgorithmScript : MonoBehaviour {
             Node start = new Node(true, startPos);
             Node end = new Node(true, endPos);
             final = FindPathActual(start, end);
-            StartCoroutine(Example());
+            
             go = false;
+            done = true;
+        }
+        if (done)
+        {
+            StartCoroutine(finalPath());
+            done = false;
         }
 
     }
-    IEnumerator Example()
+
+
+    IEnumerator ChangedSearched()
     {
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(0);
+        changeNext();
+    }
+    void changeNext()
+    {
+        if (toChange.Count > 1)
+        {
+            Vector3 p = toChange[0].pos;
+            toChange.Remove(toChange[0]);
+            FindAt(toChange[0].pos).gameObject.GetComponent<SpriteRenderer>().sprite = aSprite;
+        }
+        StartCoroutine(ChangedSearched());
+    }
+
+    IEnumerator finalPath()
+    {
+        yield return new WaitUntil(() => toChange.Count == 1);
         DeleteNext();
     }
     void DeleteNext()
@@ -58,7 +88,7 @@ public class AlgorithmScript : MonoBehaviour {
         {
             Destroy(FindAt(final[0].pos));
             final.Remove(final[0]);
-            StartCoroutine(Example());
+            StartCoroutine(finalPath());
         }
     }
     private List<Node> FindPathActual(Node start, Node target)
@@ -73,7 +103,8 @@ public class AlgorithmScript : MonoBehaviour {
 
         //We start adding to the open set
         openSet.Add(start);
-        
+        StartCoroutine(ChangedSearched());
+
         while (openSet.Count > 0)
         {
             Node currentNode = openSet[0];
@@ -139,16 +170,28 @@ public class AlgorithmScript : MonoBehaviour {
                         if (!textList.Contains((neighbour.pos).ToString()))
                         {
                             openSet.Add(neighbour);
-                        }
-                        //--------------
-                       /* if (!openSet.Contains(neighbour))
-                        {
-                            //  print(neighbour.pos);
-                            if (Max > 0)
+                            textList.Clear();
+                            foreach (Node a in alreadySearched)
                             {
-                                Max--;
+                                textList.Add((a.pos).ToString());
                             }
-                        }*/
+                            if (!textList.Contains((neighbour.pos).ToString()))
+                            {
+                                if(neighbour.pos!=endPos)
+                                    toChange.Add(neighbour);
+                                alreadySearched.Add(neighbour);
+                            }
+                        }
+                        
+                        //--------------
+                        /* if (!openSet.Contains(neighbour))
+                         {
+                             //  print(neighbour.pos);
+                             if (Max > 0)
+                             {
+                                 Max--;
+                             }
+                         }*/
                     }
                 }
             }
