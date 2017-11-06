@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class WaypointToggle : MonoBehaviour {
 
+    bool drawnOnce = true;
     public bool waypointOn = false;
     public GameObject wayPoints;
-
+    //public GameObject tiles;
+    public MapGen map;
+    GameObject grid;
 
 	// Use this for initialization
 	void Start () {
@@ -16,13 +19,23 @@ public class WaypointToggle : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (waypointOn)
+        if (map.hasDrawn)
         {
-            wayPoints.SetActive(true);
-        }
-        else
-        {
-            wayPoints.SetActive(false);
+            if (drawnOnce)
+            {
+                grid = GameObject.FindGameObjectWithTag("Tiles");
+                drawnOnce = false;
+            }
+            if (waypointOn)
+            {
+                wayPoints.SetActive(true);
+                grid.SetActive(false);
+            }
+            else
+            {
+                wayPoints.SetActive(false);
+                grid.SetActive(true);
+            }
         }
 	}
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 [RequireComponent(typeof(MeshCollider))]
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -19,6 +19,7 @@ public class MapGen : MonoBehaviour
     public List<char[]> map = new List<char[]>();
     int size_x;
     int size_y;
+    public bool hasDrawn = false;
 
     public float tileSize = 1.0f;
     public Texture2D terrainTiles;
@@ -35,6 +36,7 @@ public class MapGen : MonoBehaviour
         BuildMesh();
         BuildTexture();
         CreateOverlay();
+        hasDrawn = true;
     }
 
     public void FixedUpdate()
@@ -180,6 +182,7 @@ public class MapGen : MonoBehaviour
     {
         GameObject parent = new GameObject();
         parent.name = "GridWorld";
+        parent.tag = "Tiles";
 
         for(int x = 0; x < size_x+1; x++)
         {
