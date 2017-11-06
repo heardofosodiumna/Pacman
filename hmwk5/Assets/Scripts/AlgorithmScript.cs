@@ -10,13 +10,22 @@ public class AlgorithmScript : MonoBehaviour
     Vector3 startPos;
     Vector3 endPos;
 
+    List<Node> toChange;
+    List<Node> changed;
+    public GameObject outer;
+    public GameObject inner;
+    bool found=false;
     MapGen mapgen;
+    public Sprite aSprite;
     List<char[]> pixel_map;
     List<List<Node>> tile_map;
+    List<Node> openSet = new List<Node>();
+    HashSet<Node> closedSet = new HashSet<Node>();
+    List<Node> path;
+    GameObject currline;
 
     public Material line_mat;
-
-    bool done;
+    
 
 
     // Use this for initialization
@@ -26,43 +35,81 @@ public class AlgorithmScript : MonoBehaviour
         pixel_map = mapgen.map;
         tile_map = new List<List<Node>>();
 
+        toChange = new List<Node>();
+        changed = new List<Node>();
         ConvertPixelMaptoTiles();
-        findAndGetStart();
-        findAndGetEnd();
-
-        done = false;
+        StartCoroutine(ChangedSearched());
     }
 
     // Update is called once per frame
-    void Update()
+    
+    IEnumerator finalPath()
     {
+        yield return new WaitUntil(() => toChange.Count == 1);
+        DeleteNext();
+    }
+    void DeleteNext()
+    {
+        DrawPath(path);
+    }
+    IEnumerator ChangedSearched()
+    {
+        yield return new WaitForSeconds(0f);
+        changeNext();
+    }
+   
+    GameObject FindAt(Vector3 pos)
+    {
+        // get all colliders that intersect pos:
+        Collider2D col = Physics2D.OverlapBox(pos, new Vector2(.5f, .5f), 0);
+        if (col)
+            return col.gameObject;
+        return null;
+    }
+    void changeNext()
+    {
+        if (toChange.Count > 1)
+        {
+            Vector3 p = new Vector3((toChange[0].gridY) * 3 * mapgen.tileSize + mapgen.tileSize + .5f, (mapgen.map.Count - (toChange[0].gridX * 3)) * mapgen.tileSize - .5f, -1);
+            toChange.Remove(toChange[0]);
+            Instantiate(outer, p, new Quaternion(0, 0, 0, 0));
+        }
+        StartCoroutine(ChangedSearched());
+    }
+    public void Search()
+    {
+        if (currline != null)
+            Destroy(currline);
+
+        toChange.Clear();
+        closedSet.Clear();
+        openSet.Clear();
+        changed.Clear();
+        foreach (GameObject x in GameObject.FindGameObjectsWithTag("wall"))
+        {
+            Destroy(x);
+        }
         //need to contantly get this because the user can relocate start and end
         //if either is relocated the reference of the original is deleted and this the reference is null
         //thus if it is null we relocate it agains
-        if (!start)
-            findAndGetStart();
-        if (!end)
-            findAndGetEnd();
-
-        
-        if(start && end && !done)
+        findAndGetStart();
+        findAndGetEnd();
+        if (start && end)
         {
             Node start_node = tile_map[(int)startPos.x][(int)startPos.y];
             Node end_node = tile_map[(int)endPos.x][(int)endPos.y];
 
-            List<Node> path = FindPathActual(start_node, end_node);
+            path = FindPathActual(start_node, end_node);
             if (path.Count != 0)
             {
-                DrawPath(path);
-                done = true;
+                StartCoroutine(finalPath());
             }
         }
     }
-
     public void ConvertPixelMaptoTiles()
     {
         List<List<Node>> new_tile_map = new List<List<Node>>();
-        for(int x = 1; x < pixel_map.Count-1; x+=3)
+        for(int x = 0; x < pixel_map.Count-1; x+=3)
         {
             List<Node> row = new List<Node>();
             for(int y = 1; y < pixel_map[0].Length - 1; y+=3)
@@ -72,11 +119,12 @@ public class AlgorithmScript : MonoBehaviour
                 for (int k = -1; k < 2; k++)
                 {
                     for (int l = -1; l < 2; l++)
-                        if (pixel_map[x + k][y + l] != '.')
-                        {
-                            tile.walkable = false;
-                            break;
-                        }
+                        if(x+k>0 && y+l>0)
+                            if (pixel_map[x + k][y + l] != '.')
+                            {
+                                tile.walkable = false;
+                                break;
+                            }
                     if (!tile.walkable)
                         break;
                 }
@@ -124,11 +172,12 @@ public class AlgorithmScript : MonoBehaviour
 
     private void DrawPath(List<Node> path)
     {
-        GameObject path_line = new GameObject();
-        path_line.transform.position = new Vector3(path[0].gridY, path[0].gridX, -2);
-        path_line.AddComponent<LineRenderer>();
 
-        LineRenderer lr = path_line.GetComponent<LineRenderer>();
+        currline = new GameObject();
+        currline.transform.position = new Vector3(path[0].gridY, path[0].gridX, -2);
+        currline.AddComponent<LineRenderer>();
+
+        LineRenderer lr = currline.GetComponent<LineRenderer>();
         lr.material = line_mat;
         lr.startColor = Color.green;
         lr.endColor = Color.green;
@@ -149,11 +198,10 @@ public class AlgorithmScript : MonoBehaviour
     {
         //Typical A* algorythm from here and on
         //We need two lists, one for the nodes we need to check and one for the nodes we've already checked
-        List<Node> openSet = new List<Node>();
-        HashSet<Node> closedSet = new HashSet<Node>();
 
         //We start adding to the open set
         openSet.Add(start);
+
         //StartCoroutine(ChangedSearched());
 
         while (openSet.Count > 0)
@@ -174,11 +222,13 @@ public class AlgorithmScript : MonoBehaviour
             //we remove the current node from the open set and add to the closed set
             openSet.Remove(currentNode);
             closedSet.Add(currentNode);
+            toChange.Add(currentNode);
 
             //if the current node is the target node
             if (currentNode.gridX == target.gridX && currentNode.gridY == target.gridY)
             {
                 //that means we reached our destination, so we are ready to retrace our path
+                found = true;
                 return RetracePath(start, currentNode);
             }
 
@@ -209,7 +259,10 @@ public class AlgorithmScript : MonoBehaviour
                         }
 
                         if (!contains)
-                            openSet.Add(neighbour);
+                        {
+                           openSet.Add(neighbour);
+                           toChange.Add(neighbour);
+                        }
                     }
                 }
             }
