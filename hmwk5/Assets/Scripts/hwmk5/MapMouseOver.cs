@@ -6,7 +6,7 @@ using UnityEngine;
 public class MapMouseOver : MonoBehaviour {
 
     MapGen mapgen;
-    ArrayList map;
+    List<char[]> map;
 
     GameObject startButton;
     GameObject endButton;
@@ -52,10 +52,26 @@ public class MapMouseOver : MonoBehaviour {
             //Find priority queue (make one?) in C#
 
 
+
             int x = Mathf.FloorToInt(hitinfo.point.x / mapgen.tileSize);
             int y = Mathf.FloorToInt(hitinfo.point.y / mapgen.tileSize);
-            Debug.Log("TILE: " + x + " " + y);
-            if(Input.GetMouseButtonDown(0))
+            //Debug.Log(x + ", " + y + " is tile type " + map[map.Count-1-y][x]);
+            if (x - 1 < 0)
+                x = 1;
+            else if ((x - 1) % 3 == 2)
+                x += 1;
+            else if ((x - 1) % 3 == 1)
+                x -= 1;
+
+            if (y - 1 < 0)
+                y = 1;
+            else if ((y-1) % 3 == 2)
+                y += 1;
+            else if ((y-1) % 3 == 1)
+                y -= 1;
+
+            
+            if (Input.GetMouseButtonDown(0))
             {
                 if(startButton.GetComponent<startBut>().GetStart())
                 {
@@ -64,7 +80,8 @@ public class MapMouseOver : MonoBehaviour {
                         Destroy(start_tile.gameObject);
                     }
 
-                    start_tile = Instantiate(start_object, new Vector3(x+mapgen.tileSize/2f, y + mapgen.tileSize / 2f, -2), new Quaternion(0, 0, 0, 0));
+                    start_tile = Instantiate(start_object, new Vector3(x + mapgen.tileSize/2f, y + mapgen.tileSize / 2f, -2), new Quaternion(0, 0, 0, 0));
+                    start_tile.transform.localScale = new Vector3(3, 3, 0);
 
                     startButton.GetComponent<startBut>().setStartFalse();
                 }
@@ -76,6 +93,7 @@ public class MapMouseOver : MonoBehaviour {
                     }
 
                     end_tile = Instantiate(end_object, new Vector3(x + mapgen.tileSize / 2f, y + mapgen.tileSize / 2f, -2), new Quaternion(0, 0, 0, 0));
+                    end_tile.transform.localScale = new Vector3(3, 3, 0);
 
                     endButton.GetComponent<endBut>().setEndFalse();
                 }

@@ -22,10 +22,8 @@ public class startBut : MonoBehaviour {
     }
     public void setStartTrue()
     {
-
         activateStart = true;
-        text.text = "click to set location";
-        
+        text.text = "click to set location"; 
     }
     public bool GetStart()
     {

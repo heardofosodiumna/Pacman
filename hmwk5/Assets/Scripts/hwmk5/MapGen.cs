@@ -16,7 +16,7 @@ public class MapGen : MonoBehaviour
     public GameObject center_dot;
     Ray ray;
     RaycastHit hit;
-    public ArrayList map = new ArrayList();
+    public List<char[]> map = new List<char[]>();
     int size_x;
     int size_y;
 
@@ -24,12 +24,41 @@ public class MapGen : MonoBehaviour
     public Texture2D terrainTiles;
     public int tileResolution;
 
+    public Material line_mat;
+
+    Texture2D mapText;
+
     // Use this for initialization
     void Start()
     {
         ParseFile();
         BuildMesh();
         BuildTexture();
+        CreateOverlay();
+    }
+
+    public void FixedUpdate()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitinfo;
+        if (GetComponent<Collider>().Raycast(ray, out hitinfo, Mathf.Infinity) && Input.GetMouseButtonDown(1))
+        {
+            //get the input of the mouse
+
+            // this will be the color of the tree
+            Color[] c = terrainTiles.GetPixels(tileResolution, 0, tileResolution, tileResolution);
+            int x = Mathf.FloorToInt(hitinfo.point.x / tileSize);
+            int y = Mathf.FloorToInt(hitinfo.point.y / tileSize);
+
+            mapText.SetPixels(x * tileResolution, y * tileResolution, tileResolution, tileResolution, c);
+            mapText.Apply();
+            MeshRenderer mesh_renderer = GetComponent<MeshRenderer>();
+            mesh_renderer.sharedMaterials[0].mainTexture = mapText;
+
+            map[map.Count - 1 - y][x] = 'T';
+
+            FindObjectOfType<AlgorithmScript>().ConvertPixelMaptoTiles();
+        }
     }
 
     void ParseFile()
@@ -40,15 +69,14 @@ public class MapGen : MonoBehaviour
         while (!input.EndOfStream)
         {
             string line = input.ReadLine();
-            map.Add(line.ToCharArray());
+            char[] char_line = line.ToCharArray();
+            map.Add(char_line);
             size_x = line.Length;
         }
 
         input.Close();
 
         size_y = map.Count;
-        Debug.Log(size_x);
-        Debug.Log(size_y);
     }
 
     void BuildTexture()
@@ -60,8 +88,7 @@ public class MapGen : MonoBehaviour
         for (int y = 0; y < size_y; y++) {
             for(int x = 0; x < size_x; x++)
             {
-                char[] line = (char[])map[size_y - 1 - y];
-                char tile = line[x];
+                char tile = map[size_y - 1 - y][x];
 
                 int texture_index = 0;
                 switch(tile)
@@ -80,8 +107,7 @@ public class MapGen : MonoBehaviour
                 Color[] c = terrainTiles.GetPixels(texture_index*tileResolution, 0, tileResolution, tileResolution);
                 texture.SetPixels(x * tileResolution, y * tileResolution, tileResolution, tileResolution, c);
             }
-        }
-        
+        } 
 
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
@@ -89,6 +115,8 @@ public class MapGen : MonoBehaviour
 
         MeshRenderer mesh_renderer = GetComponent<MeshRenderer>();
         mesh_renderer.sharedMaterials[0].mainTexture = texture;
+
+        mapText = texture;
     }
 
 
@@ -149,4 +177,62 @@ public class MapGen : MonoBehaviour
         mesh_collider.sharedMesh = mesh;
     }
 
+    void CreateOverlay()
+    {
+        for(int x = 0; x < size_x+1; x++)
+        {
+            if (x % 3 != 0)
+                continue;
+
+            GameObject path_line = new GameObject();
+            path_line.transform.position = new Vector3(x * tileSize, 0, -2);
+            path_line.AddComponent<LineRenderer>();
+
+            LineRenderer lr = path_line.GetComponent<LineRenderer>();
+            lr.material = line_mat;
+            lr.startColor = Color.green;
+            lr.endColor = Color.green;
+
+            lr.startWidth = .2f;
+            lr.endWidth = .2f;
+
+            Vector3 pos = new Vector3(x * tileSize, size_y * tileSize, -2);
+            lr.SetPosition(0, pos);
+            lr.SetPosition(1, new Vector3(x * tileSize, 0, -2));
+        }
+
+        for (int y = 0; y < size_y + 1; y++)
+        {
+            if (y % 3 != 0)
+                continue;
+
+            GameObject path_line = new GameObject();
+            path_line.transform.position = new Vector3(0, y * size_y, -2);
+            path_line.AddComponent<LineRenderer>();
+
+            LineRenderer lr = path_line.GetComponent<LineRenderer>();
+            lr.material = line_mat;
+            lr.startColor = Color.green;
+            lr.endColor = Color.green;
+
+            lr.startWidth = .2f;
+            lr.endWidth = .2f;
+
+            Vector3 pos = new Vector3(size_x * tileSize, y * tileSize, -2);
+            lr.SetPosition(0, pos);
+            lr.SetPosition(1, new Vector3( 0, y * tileSize, -2));
+        }
+
+        for (int y = 0; y < size_y+1; y++)
+        {
+            for (int x = 0; x < size_x+1; x++)
+            {   
+                if ((x-1) % 3 == 0 && (y-1) % 3 == 0)
+                {
+                    GameObject dot = Instantiate(center_dot, new Vector3(x*tileSize + tileSize/2,y*tileSize+tileSize/2, -2), new Quaternion(0, 0, 0, 0));
+                    dot.transform.localScale = new Vector3(1, 1, 1);
+                }
+            }
+        }
+    }
 }
