@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class AlgorithmScript : MonoBehaviour
@@ -23,6 +24,7 @@ public class AlgorithmScript : MonoBehaviour
     HashSet<Node> closedSet = new HashSet<Node>();
     List<Node> path;
     GameObject currline;
+    bool manhattan = true;
 
     public Material line_mat;
     
@@ -48,10 +50,12 @@ public class AlgorithmScript : MonoBehaviour
         yield return new WaitUntil(() => toChange.Count == 1);
         DeleteNext();
     }
+
     void DeleteNext()
     {
         DrawPath(path);
     }
+
     IEnumerator ChangedSearched()
     {
         yield return new WaitForSeconds(0f);
@@ -66,6 +70,7 @@ public class AlgorithmScript : MonoBehaviour
             return col.gameObject;
         return null;
     }
+
     void changeNext()
     {
         if (toChange.Count > 1)
@@ -76,6 +81,7 @@ public class AlgorithmScript : MonoBehaviour
         }
         StartCoroutine(ChangedSearched());
     }
+
     public void Search()
     {
         if (currline != null)
@@ -106,6 +112,7 @@ public class AlgorithmScript : MonoBehaviour
             }
         }
     }
+
     public void ConvertPixelMaptoTiles()
     {
         List<List<Node>> new_tile_map = new List<List<Node>>();
@@ -194,6 +201,14 @@ public class AlgorithmScript : MonoBehaviour
         }
     }
 
+    public void toggleH()
+    {
+        manhattan = !manhattan;
+        if (manhattan)
+            GameObject.FindGameObjectWithTag("hbut").GetComponentInChildren<Text>().text = "Heuristic is: Manhattan ";
+        else
+            GameObject.FindGameObjectWithTag("hbut").GetComponentInChildren<Text>().text = "Heuristic is: Euclidian ";
+    }
     private List<Node> FindPathActual(Node start, Node target)
     {
         //Typical A* algorythm from here and on
@@ -246,7 +261,10 @@ public class AlgorithmScript : MonoBehaviour
 
                         //we calculate the new costs
                         neighbour.gCost = (int)newMovementCostToNeighbour;
-                        neighbour.hCost = Mathf.Abs(neighbour.gridX - target.gridX) + Mathf.Abs(neighbour.gridY - target.gridY);
+                        if (manhattan)
+                            neighbour.hCost = Mathf.Abs(neighbour.gridX - target.gridX) + Mathf.Abs(neighbour.gridY - target.gridY);
+                        else
+                            neighbour.hCost = (int)Mathf.Sqrt(  Mathf.Pow(Mathf.Abs(neighbour.gridX - target.gridX), 2) + Mathf.Pow(Mathf.Abs(neighbour.gridY - target.gridY), 2));
                         //Assign the parent node
                         neighbour.parentNode = currentNode;
                         //And add the neighbour node to the open set
