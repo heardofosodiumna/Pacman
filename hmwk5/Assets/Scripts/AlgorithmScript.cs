@@ -26,6 +26,8 @@ public class AlgorithmScript : MonoBehaviour
     GameObject currline;
     bool manhattan = true;
     public float weightH;
+    public WaypointToggle wt;
+    public GameObject waypoints;
 
     public Material line_mat;
     
@@ -45,7 +47,11 @@ public class AlgorithmScript : MonoBehaviour
         StartCoroutine(ChangedSearched());
     }
     // Update is called once per frame
-    
+    void FixedUpdate()
+    {
+   //     print(wt.waypointOn);
+    }
+
     IEnumerator finalPath()
     {
         yield return new WaitUntil(() => toChange.Count == 1);
@@ -103,13 +109,21 @@ public class AlgorithmScript : MonoBehaviour
         findAndGetEnd();
         if (start && end)
         {
+           
             Node start_node = tile_map[(int)startPos.x][(int)startPos.y];
             Node end_node = tile_map[(int)endPos.x][(int)endPos.y];
 
-            path = FindPathActual(start_node, end_node);
-            if (path.Count != 0)
+            if (!wt.waypointOn)
             {
-                StartCoroutine(finalPath());
+                path = FindPathActual(start_node, end_node);
+                if (path.Count != 0)
+                {
+                    StartCoroutine(finalPath());
+                }
+            }
+            else
+            {
+                FindPathWayPoint(start_node, end_node);
             }
         }
     }
@@ -157,8 +171,7 @@ public class AlgorithmScript : MonoBehaviour
             x = Mathf.FloorToInt(x / 3);
             y = Mathf.FloorToInt(y / 3);
             startPos = new Vector2(y, x);
-
-            print(startPos);
+            
         }
     }
 
@@ -210,6 +223,7 @@ public class AlgorithmScript : MonoBehaviour
         else
             GameObject.FindGameObjectWithTag("hbut").GetComponentInChildren<Text>().text = "Heuristic is: Euclidian ";
     }
+
     private List<Node> FindPathActual(Node start, Node target)
     {
         //Typical A* algorythm from here and on
@@ -288,6 +302,103 @@ public class AlgorithmScript : MonoBehaviour
             }
         }
         return new List<Node>();
+    }
+
+    private void FindPathWayPoint(Node start, Node target)
+    {
+        Vector3 startloc = GameObject.FindGameObjectWithTag("start").transform.position;
+        Vector3 closest = new Vector3(-999,-999,0);
+        float closestDist = Vector3.Distance(startloc, closest);
+        //get the nearest waypoint
+        foreach(Transform x in waypoints.GetComponentInChildren<Transform>())
+        {
+            if( Vector3.Distance(startloc, x.localPosition) < closestDist)
+            {
+                closestDist = Vector3.Distance(startloc, x.localPosition);
+                closest = x.localPosition;
+            }
+        }
+        //closest is the locaitons of the closest  object in word space
+        print(closest);
+
+
+        //Typical A* algorythm from here and on
+        //We need two lists, one for the nodes we need to check and one for the nodes we've already checked
+        /*
+        //We start adding to the open set
+        openSet.Add(start);
+
+        //StartCoroutine(ChangedSearched());
+
+        while (openSet.Count > 0)
+        {
+            Node currentNode = openSet[0];
+            for (int i = 0; i < openSet.Count; i++)
+            {
+                //We check the costs for the current node
+                //You can have more opt. here but that's not important now
+                if (openSet[i].fCost < currentNode.fCost ||
+                    (openSet[i].fCost == currentNode.fCost && openSet[i].hCost < currentNode.hCost))
+                {
+                    //and then we assign a new current node
+                    currentNode = openSet[i];
+                }
+            }
+
+            //we remove the current node from the open set and add to the closed set
+            openSet.Remove(currentNode);
+            closedSet.Add(currentNode);
+            toChange.Add(currentNode);
+
+            //if the current node is the target node
+            if (currentNode.gridX == target.gridX && currentNode.gridY == target.gridY)
+            {
+                //that means we reached our destination, so we are ready to retrace our path
+                found = true;
+                return RetracePath(start, currentNode);
+            }
+
+            //if we haven't reached our target, then we need to start looking the neighbours
+            foreach (Node neighbour in GetNeighbours(currentNode))
+            {
+                if (!closedSet.Contains(neighbour))
+                {
+                    //we create a new movement cost for our neighbours
+                    float newMovementCostToNeighbour = currentNode.gCost + 1;
+
+                    //and if it's lower than the neighbour's cost
+                    if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
+                    {
+
+                        //we calculate the new costs
+                        neighbour.gCost = (int)newMovementCostToNeighbour;
+                        if (manhattan)
+                            neighbour.hCost = (int)(Mathf.Abs(neighbour.gridX - target.gridX) + Mathf.Abs(neighbour.gridY - target.gridY));
+                        else
+                            neighbour.hCost = (int)(Mathf.Sqrt(Mathf.Pow(Mathf.Abs(neighbour.gridX - target.gridX), 2) + Mathf.Pow(Mathf.Abs(neighbour.gridY - target.gridY), 2)));
+                        neighbour.hCost = (int)(neighbour.hCost * weightH);
+                        //Assign the parent node
+                        neighbour.parentNode = currentNode;
+                        //And add the neighbour node to the open set
+
+                        bool contains = false;
+                        foreach (Node n in openSet)
+                        {
+                            if (n.gridX == neighbour.gridX && n.gridY == neighbour.gridY)
+                                contains = true;
+                        }
+
+                        if (!contains)
+                        {
+                            openSet.Add(neighbour);
+                            toChange.Add(neighbour);
+                        }
+                    }
+                }
+            }
+        }
+        return new List<Node>();
+        */
     }
 
     List<Node> RetracePath(Node startNode, Node endNode)
