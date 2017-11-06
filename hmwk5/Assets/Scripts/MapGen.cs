@@ -119,7 +119,6 @@ public class MapGen : MonoBehaviour
         mapText = texture;
     }
 
-
     void BuildMesh()
     {
         int numTiles = size_x * size_y;
@@ -179,6 +178,9 @@ public class MapGen : MonoBehaviour
 
     void CreateOverlay()
     {
+        GameObject parent = new GameObject();
+        parent.name = "GridWorld";
+
         for(int x = 0; x < size_x+1; x++)
         {
             if (x % 3 != 0)
@@ -199,6 +201,7 @@ public class MapGen : MonoBehaviour
             Vector3 pos = new Vector3(x * tileSize, size_y * tileSize, -2);
             lr.SetPosition(0, pos);
             lr.SetPosition(1, new Vector3(x * tileSize, 0, -2));
+            path_line.transform.parent = parent.transform;
         }
 
         for (int y = 0; y < size_y + 1; y++)
@@ -221,6 +224,7 @@ public class MapGen : MonoBehaviour
             Vector3 pos = new Vector3(size_x * tileSize, y * tileSize, -2);
             lr.SetPosition(0, pos);
             lr.SetPosition(1, new Vector3( 0, y * tileSize, -2));
+            path_line.transform.parent = parent.transform;
         }
 
         for (int y = 0; y < size_y+1; y++)
@@ -231,6 +235,7 @@ public class MapGen : MonoBehaviour
                 {
                     GameObject dot = Instantiate(center_dot, new Vector3(x*tileSize + tileSize/2,y*tileSize+tileSize/2, -2), new Quaternion(0, 0, 0, 0));
                     dot.transform.localScale = new Vector3(1, 1, 1);
+                    dot.transform.parent = parent.transform;
                 }
             }
         }

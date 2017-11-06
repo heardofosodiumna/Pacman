@@ -25,6 +25,7 @@ public class AlgorithmScript : MonoBehaviour
     List<Node> path;
     GameObject currline;
     bool manhattan = true;
+    public float weightH;
 
     public Material line_mat;
     
@@ -33,6 +34,7 @@ public class AlgorithmScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        weightH = 1;
         mapgen = GetComponent<MapGen>();
         pixel_map = mapgen.map;
         tile_map = new List<List<Node>>();
@@ -42,7 +44,6 @@ public class AlgorithmScript : MonoBehaviour
         ConvertPixelMaptoTiles();
         StartCoroutine(ChangedSearched());
     }
-
     // Update is called once per frame
     
     IEnumerator finalPath()
@@ -262,9 +263,10 @@ public class AlgorithmScript : MonoBehaviour
                         //we calculate the new costs
                         neighbour.gCost = (int)newMovementCostToNeighbour;
                         if (manhattan)
-                            neighbour.hCost = Mathf.Abs(neighbour.gridX - target.gridX) + Mathf.Abs(neighbour.gridY - target.gridY);
+                            neighbour.hCost = (int)( Mathf.Abs(neighbour.gridX - target.gridX) + Mathf.Abs(neighbour.gridY - target.gridY));
                         else
-                            neighbour.hCost = (int)Mathf.Sqrt(  Mathf.Pow(Mathf.Abs(neighbour.gridX - target.gridX), 2) + Mathf.Pow(Mathf.Abs(neighbour.gridY - target.gridY), 2));
+                            neighbour.hCost = (int)( Mathf.Sqrt(  Mathf.Pow(Mathf.Abs(neighbour.gridX - target.gridX), 2) + Mathf.Pow(Mathf.Abs(neighbour.gridY - target.gridY), 2)));
+                        neighbour.hCost = (int)(neighbour.hCost * weightH);
                         //Assign the parent node
                         neighbour.parentNode = currentNode;
                         //And add the neighbour node to the open set
