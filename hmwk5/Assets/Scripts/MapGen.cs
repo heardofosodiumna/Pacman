@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Linq;
-
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(MeshCollider))]
 [RequireComponent(typeof(MeshFilter))]
@@ -68,8 +68,12 @@ public class MapGen : MonoBehaviour
 
     void ParseFile()
     {
-
-        string file_path = "map2.txt";
+        int y = SceneManager.GetActiveScene().buildIndex;
+        string file_path = "map.txt";
+        if (y==1)
+        {
+            file_path = "map2.txt";
+        }
         StreamReader input = new StreamReader(file_path);
 
         while (!input.EndOfStream)
@@ -189,10 +193,6 @@ public class MapGen : MonoBehaviour
             int remove = triangles2[0];
             for (int i = 0; i < triangles2.Length; i++)
                 triangles2[i] -= remove;
-
-            print(triangles2[0]);
-            print(triangles2[1]);
-            print(triangles2[2]);
 
             Mesh mesh1 = new Mesh();
             mesh1.vertices = vertices1;

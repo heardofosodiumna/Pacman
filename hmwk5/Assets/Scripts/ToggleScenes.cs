@@ -5,11 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class ToggleScenes : MonoBehaviour {
 
-    bool onFirst = true;
+    public bool onFirst;
 	// Use this for initialization
-	void Start () {
-		
-	}
+	void Start ()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+            onFirst = true;
+        else
+            onFirst = false;
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -20,11 +25,11 @@ public class ToggleScenes : MonoBehaviour {
         onFirst = !onFirst;
         if (!onFirst)
         {
-            SceneManager.LoadScene(0, LoadSceneMode.Single);
+            SceneManager.LoadScene(1, LoadSceneMode.Single);
         }
         else
         {
-            SceneManager.LoadScene(1, LoadSceneMode.Single);
+            SceneManager.LoadScene(0, LoadSceneMode.Single);
         }
 
     }

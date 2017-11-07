@@ -411,7 +411,6 @@ public class AlgorithmScript : MonoBehaviour
         {
             //print("Towards: " + b.position);
             Vector3 point = Vector3.Lerp(a.localPosition, b.localPosition, j / dist);
-           
             if (pixel_map[(int)(pixel_map.Count - point.y)][(int)point.x] != '.')
             {
                 return false;
