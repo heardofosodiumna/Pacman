@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 
-//[ExecuteInEditMode]
+
 [RequireComponent(typeof(MeshCollider))]
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -19,15 +20,17 @@ public class MapGen : MonoBehaviour
     public List<char[]> map = new List<char[]>();
     int size_x;
     int size_y;
-    public bool hasDrawn = false;
 
     public float tileSize = 1.0f;
     public Texture2D terrainTiles;
     public int tileResolution;
-
+    public bool hasDrawn = false;
     public Material line_mat;
-
     Texture2D mapText;
+    public GameObject ts;
+    MeshRenderer mr1;
+    MeshRenderer mr2;
+    public GameObject map2;
 
     // Use this for initialization
     void Start()
@@ -65,7 +68,8 @@ public class MapGen : MonoBehaviour
 
     void ParseFile()
     {
-        string file_path = "map.txt";
+
+        string file_path = "map2.txt";
         StreamReader input = new StreamReader(file_path);
 
         while (!input.EndOfStream)
@@ -87,13 +91,14 @@ public class MapGen : MonoBehaviour
         int textHeight = size_y * tileResolution;
         Texture2D texture = new Texture2D(textWidth, textHeight);
 
-        for (int y = 0; y < size_y; y++) {
-            for(int x = 0; x < size_x; x++)
+        for (int y = 0; y < size_y; y++)
+        {
+            for (int x = 0; x < size_x; x++)
             {
                 char tile = map[size_y - 1 - y][x];
 
                 int texture_index = 0;
-                switch(tile)
+                switch (tile)
                 {
                     case '@':
                         texture_index = 4;
@@ -106,20 +111,23 @@ public class MapGen : MonoBehaviour
                         break;
                 }
 
-                Color[] c = terrainTiles.GetPixels(texture_index*tileResolution, 0, tileResolution, tileResolution);
+                Color[] c = terrainTiles.GetPixels(texture_index * tileResolution, 0, tileResolution, tileResolution);
                 texture.SetPixels(x * tileResolution, y * tileResolution, tileResolution, tileResolution, c);
             }
-        } 
+        }
 
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.Apply();
 
-        MeshRenderer mesh_renderer = GetComponent<MeshRenderer>();
-        mesh_renderer.sharedMaterials[0].mainTexture = texture;
-
+        mr1.sharedMaterials[0].mainTexture = texture;
         mapText = texture;
+
+        if (mr2 != null)
+            mr2.sharedMaterials[0].mainTexture = texture;
+
     }
+
 
     void BuildMesh()
     {
@@ -164,27 +172,78 @@ public class MapGen : MonoBehaviour
             }
         }
 
-        Mesh mesh = new Mesh();
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
-        mesh.normals = normals;
-        mesh.uv = uv;
+        if (vertices.Length > 65000)
+        {
+            Vector3[] vertices1 = vertices.Take((vsize_x * (vsize_y + 2) / 2)).ToArray();
+            Vector3[] vertices2 = vertices.Skip(vsize_x * vsize_y / 2 - vsize_x).ToArray();
 
-        MeshFilter mesh_filter = GetComponent<MeshFilter>();
-        MeshRenderer mesh_renderer = GetComponent<MeshRenderer>();
-        MeshCollider mesh_collider = GetComponent<MeshCollider>();
+            Vector3[] normals1 = normals.Take((vsize_x * (vsize_y + 2) / 2)).ToArray();
+            Vector3[] normals2 = normals.Skip(vsize_x * vsize_y / 2 - vsize_x).ToArray();
 
-        mesh_filter.mesh = mesh;
-        mesh_collider.sharedMesh = mesh;
+            Vector2[] uv1 = uv.Take((vsize_x * (vsize_y + 2) / 2)).ToArray();
+            Vector2[] uv2 = uv.Skip(vsize_x * vsize_y / 2 - vsize_x).ToArray();
+
+            int[] triangles1 = triangles.Take(size_y * size_x * 6 / 2).ToArray();
+            int[] triangles2 = triangles.Skip(size_y * size_x * 6 / 2).ToArray();
+
+            int remove = triangles2[0];
+            for (int i = 0; i < triangles2.Length; i++)
+                triangles2[i] -= remove;
+
+            print(triangles2[0]);
+            print(triangles2[1]);
+            print(triangles2[2]);
+
+            Mesh mesh1 = new Mesh();
+            mesh1.vertices = vertices1;
+            mesh1.triangles = triangles1;
+            mesh1.normals = normals1;
+            mesh1.uv = uv1;
+
+            MeshFilter mesh_filter1 = GetComponent<MeshFilter>();
+            mr1 = GetComponent<MeshRenderer>();
+            MeshCollider mesh_collider1 = GetComponent<MeshCollider>();
+
+            mesh_filter1.mesh = mesh1;
+            mesh_collider1.sharedMesh = mesh1;
+
+            Mesh mesh2 = new Mesh();
+            mesh2.vertices = vertices2;
+            mesh2.triangles = triangles2;
+            mesh2.normals = normals2;
+            mesh2.uv = uv2;
+
+            MeshFilter mesh_filter2 = map2.GetComponent<MeshFilter>();
+            mr2 = map2.GetComponent<MeshRenderer>();
+            MeshCollider mesh_collider2 = map2.GetComponent<MeshCollider>();
+
+            mesh_filter2.mesh = mesh2;
+            mesh_collider2.sharedMesh = mesh2;
+        }
+        else
+        {
+            Mesh mesh = new Mesh();
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.normals = normals;
+            mesh.uv = uv;
+
+            MeshFilter mesh_filter = GetComponent<MeshFilter>();
+            mr1 = GetComponent<MeshRenderer>();
+            MeshCollider mesh_collider = GetComponent<MeshCollider>();
+
+            mesh_filter.mesh = mesh;
+            mesh_collider.sharedMesh = mesh;
+        }
     }
 
     void CreateOverlay()
     {
         GameObject parent = new GameObject();
-        parent.name = "GridWorld";
+        parent.name = "GridnCenterPts";
         parent.tag = "Tiles";
 
-        for(int x = 0; x < size_x+1; x++)
+        for (int x = 0; x < size_x + 1; x++)
         {
             if (x % 3 != 0)
                 continue;
@@ -204,6 +263,7 @@ public class MapGen : MonoBehaviour
             Vector3 pos = new Vector3(x * tileSize, size_y * tileSize, -2);
             lr.SetPosition(0, pos);
             lr.SetPosition(1, new Vector3(x * tileSize, 0, -2));
+
             path_line.transform.parent = parent.transform;
         }
 
@@ -226,17 +286,18 @@ public class MapGen : MonoBehaviour
 
             Vector3 pos = new Vector3(size_x * tileSize, y * tileSize, -2);
             lr.SetPosition(0, pos);
-            lr.SetPosition(1, new Vector3( 0, y * tileSize, -2));
+            lr.SetPosition(1, new Vector3(0, y * tileSize, -2));
+
             path_line.transform.parent = parent.transform;
         }
 
-        for (int y = 0; y < size_y+1; y++)
+        for (int y = 0; y < size_y + 1; y++)
         {
-            for (int x = 0; x < size_x+1; x++)
-            {   
-                if ((x-1) % 3 == 0 && (y-1) % 3 == 0)
+            for (int x = 0; x < size_x + 1; x++)
+            {
+                if ((x - 1) % 3 == 0 && (y - 1) % 3 == 0)
                 {
-                    GameObject dot = Instantiate(center_dot, new Vector3(x*tileSize + tileSize/2,y*tileSize+tileSize/2, -2), new Quaternion(0, 0, 0, 0));
+                    GameObject dot = Instantiate(center_dot, new Vector3(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, -2), new Quaternion(0, 0, 0, 0));
                     dot.transform.localScale = new Vector3(1, 1, 1);
                     dot.transform.parent = parent.transform;
                 }

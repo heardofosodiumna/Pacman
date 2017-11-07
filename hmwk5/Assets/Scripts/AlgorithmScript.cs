@@ -12,7 +12,7 @@ public class AlgorithmScript : MonoBehaviour
     Vector3 endPos;
 
     List<Node> toChange;
-    List<Node> changed;
+    List<NodeAway> toChange2;
     public GameObject outer;
     public GameObject inner;
     bool found=false;
@@ -22,15 +22,23 @@ public class AlgorithmScript : MonoBehaviour
     List<List<Node>> tile_map;
     List<Node> openSet = new List<Node>();
     HashSet<Node> closedSet = new HashSet<Node>();
+    List<NodeAway> openSetW = new List<NodeAway>();
+    HashSet<NodeAway> closedSetW = new HashSet<NodeAway>();
+    List<NodeAway> allNodeAways = new List<NodeAway>();
+
     List<Node> path;
+    List<NodeAway> path2;
     GameObject currline;
+    GameObject engeline;
     bool manhattan = true;
     public float weightH;
     public WaypointToggle wt;
     public GameObject waypoints;
 
     public Material line_mat;
-    
+
+    public Material line_mat2;
+
 
 
     // Use this for initialization
@@ -42,25 +50,71 @@ public class AlgorithmScript : MonoBehaviour
         tile_map = new List<List<Node>>();
 
         toChange = new List<Node>();
-        changed = new List<Node>();
+        toChange2 = new List<NodeAway>();
         ConvertPixelMaptoTiles();
         StartCoroutine(ChangedSearched());
+
+        StartCoroutine(ChangedSearched2());
+        drawEdges();
+
     }
     // Update is called once per frame
     void FixedUpdate()
     {
    //     print(wt.waypointOn);
     }
+    void drawEdges()
+    {
+        foreach (Transform first in waypoints.GetComponentInChildren<Transform>())
+        {
+            NodeAway tmp = new NodeAway(first.position.x, first.position.y);
+            tmp.wayp = first.gameObject;
+            allNodeAways.Add(tmp);
 
+            foreach (Transform second in waypoints.GetComponentInChildren<Transform>())
+            {
+                if (first.localPosition != second.localPosition)
+                {
+                    if (clearPath(first, second))
+                    {
+                        engeline = new GameObject();
+                        engeline.transform.position = new Vector3(first.localPosition.x, first.localPosition.y, -2);
+                        engeline.AddComponent<LineRenderer>();
+                        engeline.transform.parent = first;
+
+                        LineRenderer lr = engeline.GetComponent<LineRenderer>();
+                        lr.material = line_mat;
+                        lr.startColor = Color.green;
+                        lr.endColor = Color.green;
+
+                        lr.startWidth = .3f;
+                        lr.endWidth = .3f;
+                        lr.positionCount = 2;
+                        lr.SetPosition(0, first.localPosition);
+                        lr.SetPosition(1, second.localPosition);
+                    }
+                }
+            }
+        }
+    }
     IEnumerator finalPath()
     {
         yield return new WaitUntil(() => toChange.Count == 1);
         DeleteNext();
     }
+    IEnumerator finalPath2()
+    {
+        yield return new WaitUntil(() => toChange2.Count == 1);
+        DeleteNext2();
+    }
 
     void DeleteNext()
     {
         DrawPath(path);
+    }
+    void DeleteNext2()
+    {
+        DrawPath2(path2);
     }
 
     IEnumerator ChangedSearched()
@@ -68,7 +122,12 @@ public class AlgorithmScript : MonoBehaviour
         yield return new WaitForSeconds(0f);
         changeNext();
     }
-   
+    IEnumerator ChangedSearched2()
+    {
+        yield return new WaitForSeconds(.5f);
+        changeNext2();
+    }
+
     GameObject FindAt(Vector3 pos)
     {
         // get all colliders that intersect pos:
@@ -88,6 +147,16 @@ public class AlgorithmScript : MonoBehaviour
         }
         StartCoroutine(ChangedSearched());
     }
+    void changeNext2()
+    {
+        if (toChange2.Count > 1)
+        {
+            Vector3 p = new Vector3((toChange2[0].gridX), toChange2[0].gridY , -10);
+            toChange2.Remove(toChange2[0]);
+            Instantiate(inner, p, new Quaternion(0, 0, 0, 0));
+        }
+        StartCoroutine(ChangedSearched2());
+    }
 
     public void Search()
     {
@@ -95,9 +164,11 @@ public class AlgorithmScript : MonoBehaviour
             Destroy(currline);
 
         toChange.Clear();
+        toChange2.Clear();
         closedSet.Clear();
+        closedSetW.Clear();
         openSet.Clear();
-        changed.Clear();
+        openSetW.Clear();
         foreach (GameObject x in GameObject.FindGameObjectsWithTag("wall"))
         {
             Destroy(x);
@@ -123,7 +194,11 @@ public class AlgorithmScript : MonoBehaviour
             }
             else
             {
-                FindPathWayPoint(start_node, end_node);
+                path2 = FindPathWayPoint();
+                if (path2.Count != 0)
+                {
+                    StartCoroutine(finalPath2());
+                }
             }
         }
     }
@@ -199,7 +274,7 @@ public class AlgorithmScript : MonoBehaviour
         currline.AddComponent<LineRenderer>();
 
         LineRenderer lr = currline.GetComponent<LineRenderer>();
-        lr.material = line_mat;
+        lr.material = line_mat2;
         lr.startColor = Color.green;
         lr.endColor = Color.green;
 
@@ -211,6 +286,29 @@ public class AlgorithmScript : MonoBehaviour
         {
             Vector3 pos = new Vector3((path[i].gridY) * 3 * mapgen.tileSize + mapgen.tileSize + .5f, (mapgen.map.Count - (path[i].gridX * 3)) * mapgen.tileSize-.5f, -3);
             
+            lr.SetPosition(i, pos);
+        }
+    }
+    private void DrawPath2(List<NodeAway> path)
+    {
+
+        currline = new GameObject();
+        currline.transform.position = new Vector3(path[0].gridX, path[0].gridY, -4);
+        currline.AddComponent<LineRenderer>();
+
+        LineRenderer lr = currline.GetComponent<LineRenderer>();
+        lr.material = line_mat2;
+        lr.startColor = Color.green;
+        lr.endColor = Color.green;
+
+        lr.startWidth = 1f;
+        lr.endWidth = 1f;
+        lr.positionCount = path.Count;
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            Vector3 pos = new Vector3(path[i].gridX, path[i].gridY, -4);
+
             lr.SetPosition(i, pos);
         }
     }
@@ -304,85 +402,105 @@ public class AlgorithmScript : MonoBehaviour
         return new List<Node>();
     }
 
-    private void FindPathWayPoint(Node start, Node target)
+   bool clearPath(Transform a, Transform b)
+   {
+      //  float dist = Vector3.Distance(a.localPosition, b.localPosition);
+        float dist = pixel_map.Count*pixel_map[0].Length;
+        dist = dist/10;
+        for (int j=1; j<dist; j++)
+        {
+            //print("Towards: " + b.position);
+            Vector3 point = Vector3.Lerp(a.localPosition, b.localPosition, j / dist);
+           
+            if (pixel_map[(int)(pixel_map.Count - point.y)][(int)point.x] != '.')
+            {
+                return false;
+            }
+        }
+        return true;
+   }
+
+    private List<NodeAway> FindPathWayPoint()
     {
         Vector3 startloc = GameObject.FindGameObjectWithTag("start").transform.position;
-        Vector3 closest = new Vector3(-999,-999,0);
-        float closestDist = Vector3.Distance(startloc, closest);
+        Vector3 closestS = new Vector3(-999, -999, 0);
+        Vector3 endloc = GameObject.FindGameObjectWithTag("end").transform.position;
+        Vector3 closestE = new Vector3(-999, -999, 0);
+        GameObject startW = new GameObject();
+        GameObject endW = new GameObject();
+        float closestDistS = Vector3.Distance(startloc, closestS);
+        float closestDistE = Vector3.Distance(startloc, closestE);
         //get the nearest waypoint
-        foreach(Transform x in waypoints.GetComponentInChildren<Transform>())
+        foreach (Transform x in waypoints.GetComponentInChildren<Transform>())
         {
-            if( Vector3.Distance(startloc, x.localPosition) < closestDist)
+            if (Vector3.Distance(startloc, x.localPosition) < closestDistS)
             {
-                closestDist = Vector3.Distance(startloc, x.localPosition);
-                closest = x.localPosition;
+                closestDistS = Vector3.Distance(startloc, x.localPosition);
+                closestS = x.localPosition;
+                startW = x.gameObject;
+            }
+            if (Vector3.Distance(endloc, x.localPosition) < closestDistE)
+            {
+                closestDistE = Vector3.Distance(endloc, x.localPosition);
+                closestE = x.localPosition;
+                endW = x.gameObject;
             }
         }
         //closest is the locaitons of the closest  object in word space
-        print(closest);
 
-
-        //Typical A* algorythm from here and on
-        //We need two lists, one for the nodes we need to check and one for the nodes we've already checked
-        /*
-        //We start adding to the open set
-        openSet.Add(start);
-
-        //StartCoroutine(ChangedSearched());
-
-        while (openSet.Count > 0)
+        NodeAway startN = new NodeAway(closestS.x, closestS.y);
+        startN.wayp = startW;
+        openSetW.Add(startN);
+        StartCoroutine(ChangedSearched2());
+        while (openSetW.Count > 0)
         {
-            Node currentNode = openSet[0];
-            for (int i = 0; i < openSet.Count; i++)
+            NodeAway currentNode = openSetW[0];
+            for (int i = 0; i < openSetW.Count; i++)
             {
                 //We check the costs for the current node
                 //You can have more opt. here but that's not important now
-                if (openSet[i].fCost < currentNode.fCost ||
-                    (openSet[i].fCost == currentNode.fCost && openSet[i].hCost < currentNode.hCost))
+                if (openSetW[i].fCost < currentNode.fCost ||
+                    (openSetW[i].fCost == currentNode.fCost && openSetW[i].hCost < currentNode.hCost))
                 {
                     //and then we assign a new current node
-                    currentNode = openSet[i];
+                    currentNode = openSetW[i];
                 }
             }
 
+
             //we remove the current node from the open set and add to the closed set
-            openSet.Remove(currentNode);
-            closedSet.Add(currentNode);
-            toChange.Add(currentNode);
+            openSetW.Remove(currentNode);
+            closedSetW.Add(currentNode);
+           // print("curr: " + currentNode.gridX + " " + currentNode.gridY);
+            toChange2.Add(currentNode);
 
             //if the current node is the target node
-            if (currentNode.gridX == target.gridX && currentNode.gridY == target.gridY)
+            if (currentNode.gridX == closestE.x && currentNode.gridY == closestE.y)
             {
                 //that means we reached our destination, so we are ready to retrace our path
-                found = true;
-                return RetracePath(start, currentNode);
+               // print("GOAL");
+                // found = true;
+                return RetracePathW(startN, currentNode);
             }
-
-            //if we haven't reached our target, then we need to start looking the neighbours
-            foreach (Node neighbour in GetNeighbours(currentNode))
+            foreach (NodeAway neighbour in getWayNei(currentNode))
             {
-                if (!closedSet.Contains(neighbour))
+                if (!closedSetW.Contains(neighbour))
                 {
-                    //we create a new movement cost for our neighbours
-                    float newMovementCostToNeighbour = currentNode.gCost + 1;
+                    float newMovementCostToNeighbour = Vector2.Distance(new Vector2(neighbour.gridX, neighbour.gridY), new Vector2(closestS.x, closestS.y));
 
-                    //and if it's lower than the neighbour's cost
-                    if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
+                    if (newMovementCostToNeighbour < neighbour.gCost || !openSetW.Contains(neighbour))
                     {
-
-                        //we calculate the new costs
                         neighbour.gCost = (int)newMovementCostToNeighbour;
                         if (manhattan)
-                            neighbour.hCost = (int)(Mathf.Abs(neighbour.gridX - target.gridX) + Mathf.Abs(neighbour.gridY - target.gridY));
+                            neighbour.hCost = (int)(Vector2.Distance(new Vector2(neighbour.gridX,neighbour.gridY), closestE));
                         else
-                            neighbour.hCost = (int)(Mathf.Sqrt(Mathf.Pow(Mathf.Abs(neighbour.gridX - target.gridX), 2) + Mathf.Pow(Mathf.Abs(neighbour.gridY - target.gridY), 2)));
-                        neighbour.hCost = (int)(neighbour.hCost * weightH);
-                        //Assign the parent node
-                        neighbour.parentNode = currentNode;
-                        //And add the neighbour node to the open set
+                            neighbour.hCost = (int)(Mathf.Sqrt(Mathf.Pow(Mathf.Abs(neighbour.gridX - endloc.x), 2) + Mathf.Pow(Mathf.Abs(neighbour.gridY - endloc.y), 2)));
 
+                        neighbour.hCost = (int)(neighbour.hCost * weightH);
+
+                        neighbour.parentNode = currentNode;
                         bool contains = false;
-                        foreach (Node n in openSet)
+                        foreach (NodeAway n in openSetW)
                         {
                             if (n.gridX == neighbour.gridX && n.gridY == neighbour.gridY)
                                 contains = true;
@@ -390,15 +508,14 @@ public class AlgorithmScript : MonoBehaviour
 
                         if (!contains)
                         {
-                            openSet.Add(neighbour);
-                            toChange.Add(neighbour);
+                            openSetW.Add(neighbour);
                         }
                     }
                 }
             }
         }
-        return new List<Node>();
-        */
+        return new List<NodeAway>();
+
     }
 
     List<Node> RetracePath(Node startNode, Node endNode)
@@ -419,6 +536,47 @@ public class AlgorithmScript : MonoBehaviour
         path.Reverse();
     
         return path;
+    }
+
+    List<NodeAway> RetracePathW(NodeAway startNode, NodeAway endNode)
+    {
+       // print("Start: " + startNode.gridX + " "+startNode.gridY);
+        //print("End: " + endNode.gridX + " "+endNode.gridY);
+        List<NodeAway> path = new List<NodeAway>();
+        NodeAway currentNode = endNode;
+
+        while (currentNode.gridX != startNode.gridX || currentNode.gridY != startNode.gridY )
+        {
+            //print(lol);
+            path.Add(currentNode);
+            //by taking the parentNodes we assigned
+            currentNode = currentNode.parentNode;
+           // print(currentNode.gridX + " " + currentNode.gridY);
+        }
+        path.Add(startNode);
+
+        //then we simply reverse the list
+        path.Reverse();
+
+        return path;
+    }
+
+
+    List<NodeAway> getWayNei(NodeAway a)
+    {
+        List<NodeAway> neighs = new List<NodeAway>();
+        foreach (Transform line in a.wayp.GetComponentInChildren<Transform>())
+        {
+            Vector3 pos = new Vector3(line.GetComponent<LineRenderer>().GetPosition(1).x, line.GetComponent<LineRenderer>().GetPosition(1).y, -2);
+            foreach(NodeAway nd in allNodeAways)
+            {
+                if(nd.gridX == pos.x && nd.gridY == pos.y)
+                {
+                    neighs.Add(nd);
+                }
+            }
+        }
+        return neighs;
     }
 
     List<Node> GetNeighbours(Node node)
@@ -446,8 +604,8 @@ public class AlgorithmScript : MonoBehaviour
         }
         return retList;
     }
+   
 }
-
 public class Node
 {
     public bool walkable;
@@ -474,3 +632,30 @@ public class Node
         }
     }
 }
+public class NodeAway
+{
+    public float gridX;
+    public float gridY;
+
+    public int gCost;
+    public int hCost;
+    public NodeAway parentNode;
+    public GameObject wayp;
+    public List<NodeAway> neighs;
+
+    public NodeAway(float x, float y)
+    {
+        gridX = x;
+        gridY = y;
+    }
+
+    public int fCost
+    {
+        get
+        {
+            return gCost + hCost;
+        }
+    }
+    
+}
+
